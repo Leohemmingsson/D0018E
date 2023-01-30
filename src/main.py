@@ -1,8 +1,36 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, g
+from dotenv import load_dotenv
+import os 
+import mysql.connector
 
 
 app = Flask(__name__)
 
+
+def get_db():
+    if 'db' not in g:
+        load_dotenv()
+        IP = os.getenv("SERVER_IP")
+        DB_PASS = os.getenv("DB_PASS")
+        DATABASE = os.getenv("DATABASE")
+
+        mydb = mysql.connector.connect(
+            host=IP,
+            user="root",
+            password=DB_PASS,
+            database=DATABASE,
+        )
+
+        g.db = mydb
+
+    return g.db
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
 
 @app.route("/")
 def hello_world():
@@ -29,13 +57,24 @@ def admin():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html", error="jdafg")
+        return render_template("login.html")
 
     elif request.method == "POST":
         username = request.form["uname"]
         password = request.form["psw"]
 
         print(f"Tried to login as: {username} with password {password}")
+
+        db = get_db()
+        c = db.cursor()
+
+        c.execute(f"SELECT * FROM User WHERE username = \'{username}\' and password = \'{password}\'")
+        result = c.fetchall()
+        if len(result) > 0:
+            print("Logged in!")
+        else:
+            print("wrong!")
+        
 
         # Check if password and username is in the users table.
         # Redirect based on the response:
