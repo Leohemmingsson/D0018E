@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, g
+from flask import Flask, render_template, request, make_response, g, redirect, url_for
 from dotenv import load_dotenv
 import os 
 import mysql.connector
@@ -33,7 +33,7 @@ def teardown_db(exception):
         db.close()
 
 @app.route("/")
-def hello_world():
+def index():
     return render_template(
         "index.html",
         variable="oooo",
@@ -49,9 +49,9 @@ def admin():
     if not verification_cookie:
         return "Access denied!"
 
-    # Check if the verification cookie matches any admin in the database
+    # TODO: Check if the verification cookie matches any admin in the database
 
-    pass
+    return render_template("admin.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -63,32 +63,43 @@ def login():
         username = request.form["uname"]
         password = request.form["psw"]
 
-        print(f"Tried to login as: {username} with password {password}")
+        print(f"Trying to login as: {username} with password {password}")
 
         db = get_db()
-        c = db.cursor()
-
-        c.execute(f"SELECT * FROM User WHERE username = \'{username}\' and password = \'{password}\'")
-        result = c.fetchall()
-        if len(result) > 0:
-            print("Logged in!")
-        else:
-            print("wrong!")
-        
+        cursor = db.cursor()
 
         # Check if password and username is in the users table.
-        # Redirect based on the response:
-        # If the found user is a normal user, redirect to index.html with a logged in cookie
-        # res = make_response(render_template("index.html"))
-        # res.set_cookie("verification", user_id_from_sql_query)
-        # if the user is a admin, redirect to admin_page.html with a logged in cookie
-        # if none, redirect to login.html with a error
-        #
-        # The logged in cookie's content should be the users id. This is insecure but easily changeable
-        # and shouldnt matter too much since its just a demo.
+        cursor.execute(f"SELECT * FROM User WHERE username = \'{username}\' and password = \'{password}\'")
+        result = cursor.fetchall()
 
-        return render_template("index.html")
+        # The query returned results and, therefore, user(s)
+        if len(result) > 0:
 
+            # Extract relevant information from the DB response
+            uid = result[0][0]
+            username = result[0][1]
+            user_type = result[0][5]
+
+            
+            print(f"{username} ({uid}) logged in as {user_type}")
+            
+            # Redirect based on user type
+            if user_type == "admin":
+                print("redirecting to admin.html")
+                res = make_response(redirect(url_for("admin")))
+            else:
+                print("redirecting to index.html")
+                res = make_response(redirect(url_for("index")))
+
+            res.set_cookie("verification", str(uid))
+            return res
+
+        else:
+            # TODO: Maybe a fail2ban system in the future.
+
+            # Invalid login! Return a error and log the event.
+            print(f"Someone tried to log in as {username} with password {password}")
+            return render_template("login.html", error="Account not found!")
 
 if __name__ == "__main__":
     app.run(debug=True)
