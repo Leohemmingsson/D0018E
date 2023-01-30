@@ -10,15 +10,11 @@ app = Flask(__name__)
 def get_db():
     if 'db' not in g:
         load_dotenv()
-        IP = os.getenv("SERVER_IP")
-        DB_PASS = os.getenv("DB_PASS")
-        DATABASE = os.getenv("DATABASE")
-
         mydb = mysql.connector.connect(
-            host=IP,
+            host=os.getenv("SERVER_IP"),
             user="root",
-            password=DB_PASS,
-            database=DATABASE,
+            password=os.getenv("DB_PASS"),
+            database=os.getenv("DATABASE"),
         )
 
         g.db = mydb
@@ -26,7 +22,7 @@ def get_db():
     return g.db
 
 @app.teardown_appcontext
-def teardown_db(exception):
+def close_db(exception):
     db = g.pop('db', None)
 
     if db is not None:
@@ -43,7 +39,7 @@ def index():
 @app.route("/admin", methods=["GET"])
 def admin():
     # Only give access to this page if the cookie matches a admin
-    verification_cookie = request.cookies.get("verification")
+    verification_cookie: str = request.cookies.get("verification")
 
     # No cookie, user definetly unauthorized.
     if not verification_cookie:
@@ -63,8 +59,6 @@ def login():
         username = request.form["uname"]
         password = request.form["psw"]
 
-        print(f"Trying to login as: {username} with password {password}")
-
         db = get_db()
         cursor = db.cursor()
 
@@ -76,11 +70,12 @@ def login():
         if len(result) > 0:
 
             # Extract relevant information from the DB response
-            uid = result[0][0]
-            username = result[0][1]
-            user_type = result[0][5]
+            uid: str = result[0][0]
+            username: str = result[0][1]
+            user_type: str = result[0][5]
 
             
+            # TODO: Add as proper logging later
             print(f"{username} ({uid}) logged in as {user_type}")
             
             # Redirect based on user type
