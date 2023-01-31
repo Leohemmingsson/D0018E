@@ -31,22 +31,14 @@ def close_db(exception):
 
 @app.route("/")
 def index():
-    variable = []
+    products = []
     for i in range(10):
-        variable.append(
-            {
-                "id": 1,
-                "name": "awesome monitor",
-                "price": 100,
-                "quantity": 1,
-                "image": "https://i.computersalg.dk/digitalcontent/360/4305/43053377.jpg",
-                "description": "This is a monitor",
-                "href": "/product/1",
-            }
+        products.append(
+            Item(id=1, name="awesome monitor", price=100, quantity=1, image="https://i.computersalg.dk/digitalcontent/360/4305/43053377.jpg", description="This is a monitor", href="/product/1")
         )
     return render_template(
         "index.html",
-        variable=variable,
+        variable=products,
     )
 
 

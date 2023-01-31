@@ -73,9 +73,9 @@
         <div class="collapse" id="collapseExample">
             <div class="card card-body">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="link-dark rounded">PC's</a></li>
-                    <li><a href="#" class="link-dark rounded">Monitors</a></li>
-                    <li><a href="#" class="link-dark rounded">Keyboards</a></li>
+                    {% for e in tags%}
+                        <li><a href="#" class="link-dark rounded">{{e}}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>

@@ -7,14 +7,3 @@ class Item:
         self.image = image
         self.description = description
         self.href = href
-    
-    def to_json(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "price": self.price,
-            "quantity": self.quantity,
-            "image": self.image,
-            "description": self.description,
-            "href": self.href
-        }
