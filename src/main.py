@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, make_response, g, redirect, u
 from dotenv import load_dotenv
 import os
 import mysql.connector
-
+from item import Item
 
 app = Flask(__name__)
 
