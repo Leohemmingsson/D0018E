@@ -22,7 +22,7 @@ def get_db():
     return g.db
 
 
-def is_admin(cookie):
+def is_admin(cookie: any) -> bool:
     if not cookie:
         return False
 
@@ -72,10 +72,17 @@ def admin():
 @app.route("/admin/users", methods=["POST", "PUT", "DELETE"])
 def users():
     req_cookies = request.cookies.get("verification")
-    if not is_admin(req_cookies):
-        return "403: Forbidden"
+    #if not is_admin(req_cookies):
+        #return "403: Forbidden"
 
     if request.method == "POST":
+        json = request.get_json(force=True)
+        # Maybe use jsonschema (https://python-jsonschema.readthedocs.io/en/stable/) here instead.
+
+        if not (json["username"] and json["first_name"] and json["last_name"] and json["password"]):
+            return "invalid JSON"
+
+
         # Create a new user
         pass
 
@@ -87,14 +94,15 @@ def users():
         # Delete a user
         pass 
 
+    return "wow"
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
 
     elif request.method == "POST":
-        username = request.form["uname"]
-        password = request.form["psw"]
+        username: str = request.form["uname"]
+        password: str = request.form["psw"]
 
         db = get_db()
         cursor = db.cursor()
