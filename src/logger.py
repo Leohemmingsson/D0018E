@@ -19,10 +19,16 @@ class logger:
     FILE = 0b0100
 
     def __init__(self, opts, log_file="LOG_OUTPUT.txt"):
+        """
+        Use bit patterns for deciding which features to use.
+        This has the benefit of making different logging options easily combinable, like:
+        logger = l(l.STDOUT | l.FILE, "/tmp/log.txt")
+        """
+
         # Clamp the resulting values
-        self.stdout = bool(opts & 0b0001)
-        self.open_telemetry = bool(opts & 0b0010)
-        self.file = bool(opts & 0b0100)
+        self.stdout = bool(opts & self.STDOUT)
+        self.open_telemetry = bool(opts & self.OPENTELEMETRY)
+        self.file = bool(opts & self.FILE)
 
         self.log_file = log_file
 
@@ -44,6 +50,9 @@ class logger:
 
     # Logs the input through the objects chosen options
     def log(self, input):
+        """
+        Logs the input.
+        """
         if self.stdout:
             print(input)
 

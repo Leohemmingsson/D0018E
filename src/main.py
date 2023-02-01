@@ -10,7 +10,7 @@ log = logger(logger.STDOUT | logger.FILE)
 
 # This method should be used in the future if we split into multiple python files
 # In that case we can just do `from main import l; l().log("text")`
-def l():
+def get_logger():
     return log
 
 
