@@ -23,6 +23,9 @@ def get_db():
 
 
 def is_admin(cookie):
+    if not cookie:
+        return False
+
     db = get_db()
     c = db.cursor()
     c.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
@@ -51,11 +54,6 @@ def admin():
     verification_cookie: str = request.cookies.get("verification")
 
     print(f"is_admin: {is_admin(verification_cookie)}, cookie: {verification_cookie}")
-
-    # No cookie, user definetly unauthorized.
-    if not verification_cookie:
-        return "Access denied!"
-
     if not is_admin(verification_cookie):
         return "403: Forbidden"
 
@@ -78,13 +76,16 @@ def users():
         return "403: Forbidden"
 
     if request.method == "POST":
-        db = get_db()
-        c = db.cursor()
+        # Create a new user
+        pass
 
-        c.execute("select * from User")
-        users = c.fetchall()
-        return users
+    if request.method == "PUT":
+        # Promote a user to admin
+        pass 
 
+    if request.method == "DELETE":
+        # Delete a user
+        pass 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
