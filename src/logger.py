@@ -48,10 +48,9 @@ class logger:
         # remove the trailing ", "
         self.log(message[:-2])
 
-    # Logs the input through the objects chosen options
     def log(self, input):
         """
-        Logs the input.
+        Logs the input through the objects chosen options
         """
         if self.stdout:
             print(input)
