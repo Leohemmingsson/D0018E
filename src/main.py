@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 
+import jsonschema
+from schemas import user_schema
+
 
 app = Flask(__name__)
 
@@ -77,10 +80,12 @@ def users():
 
     if request.method == "POST":
         json = request.get_json(force=True)
-        # Maybe use jsonschema (https://python-jsonschema.readthedocs.io/en/stable/) here instead.
 
-        if not (json["username"] and json["first_name"] and json["last_name"] and json["password"]):
-            return "invalid JSON"
+        try:
+            jsonschema.validate(instance=json, schema=user_schema)
+        except:
+            return "Invalid json!"
+
 
 
         # Create a new user
