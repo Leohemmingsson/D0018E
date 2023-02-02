@@ -13,9 +13,9 @@ log = logger(logger.STDOUT | logger.FILE)
 def get_logger():
     return log
 
+from item import Item
 
 app = Flask(__name__)
-
 
 def get_db():
     if "db" not in g:
@@ -42,9 +42,14 @@ def close_db(exception):
 
 @app.route("/")
 def index():
+    products = []
+    for i in range(10):
+        products.append(
+            Item(id=1, name="awesome monitor", price=100, quantity=1, image="https://i.computersalg.dk/digitalcontent/360/4305/43053377.jpg", description="This is a monitor", href="/product/1")
+        )
     return render_template(
         "index.html",
-        variable="oooo",
+        variable=products,
     )
 
 
@@ -89,7 +94,9 @@ def login():
             user_type: str = result[0][5]
 
             # TODO: Add as proper logging later
+
             log.log(f"{username} ({uid}) logged in as {user_type}")
+
 
             # Redirect based on user type
             if user_type == "admin":
