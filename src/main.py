@@ -2,6 +2,17 @@ from flask import Flask, render_template, request, make_response, g, redirect, u
 from dotenv import load_dotenv
 import os
 import mysql.connector
+
+# Import logger object and set it up to log to stdout and a file
+from logger import logger
+
+log = logger(logger.STDOUT | logger.FILE)
+
+# This method should be used in the future if we split into multiple python files
+# In that case we can just do `from main import l; l().log("text")`
+def get_logger():
+    return log
+
 from item import Item
 
 app = Flask(__name__)
@@ -83,14 +94,16 @@ def login():
             user_type: str = result[0][5]
 
             # TODO: Add as proper logging later
-            print(f"{username} ({uid}) logged in as {user_type}")
+
+            log.log(f"{username} ({uid}) logged in as {user_type}")
+
 
             # Redirect based on user type
             if user_type == "admin":
-                print("redirecting to admin.html")
+                log.log("redirecting to admin.html")
                 res = make_response(redirect(url_for("admin")))
             else:
-                print("redirecting to index.html")
+                log.log("redirecting to index.html")
                 res = make_response(redirect(url_for("index")))
 
             res.set_cookie("verification", str(uid))
@@ -100,7 +113,7 @@ def login():
             # TODO: Maybe a fail2ban system in the future.
 
             # Invalid login! Return a error and log the event.
-            print(f"Someone tried to log in as {username} with password {password}")
+            log.log(f"Someone tried to log in as {username} with password {password}")
             return render_template("login.html", error="Account not found!")
 
 
