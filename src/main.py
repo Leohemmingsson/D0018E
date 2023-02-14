@@ -108,7 +108,13 @@ def users():
 
     if request.method == "PUT":
         # Promote a user to admin
-        pass
+        json = request.get_json(force=True)
+        if json["id"] and json["type"]:
+            db = get_db()
+            c = db.cursor()
+            c.execute(f"UPDATE User SET type = \"{json['type']}\" where id = {json['id']}")
+            db.commit()
+
 
     if request.method == "DELETE":
         # Delete a user
