@@ -10,7 +10,7 @@ from schemas import user_schema
 
 app = Flask(__name__)
 cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config["CORS_HEADERS"] = "Content-Type"
 
 
 def get_db():
@@ -36,6 +36,7 @@ def is_admin(cookie: any) -> bool:
     c = db.cursor()
     c.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
     return len(c.fetchall()) > 0
+
 
 @app.teardown_appcontext
 def close_db(exception):
@@ -80,8 +81,8 @@ def admin():
 @cross_origin()
 def users():
     req_cookies = request.cookies.get("verification")
-    #if not is_admin(req_cookies):
-        #return "403: Forbidden"
+    # if not is_admin(req_cookies):
+    # return "403: Forbidden"
 
     if request.method == "POST":
         json = request.get_json(force=True)
@@ -95,13 +96,19 @@ def users():
         db = get_db()
         c = db.cursor()
         sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
-        val = (json["username"], json["first_name"], json["last_name"], json["password"], "customer")
+        val = (
+            json["username"],
+            json["first_name"],
+            json["last_name"],
+            json["password"],
+            "customer",
+        )
         c.execute(sql, val)
         db.commit()
 
     if request.method == "PUT":
         # Promote a user to admin
-        pass 
+        pass
 
     if request.method == "DELETE":
         # Delete a user
@@ -114,8 +121,8 @@ def users():
             c.execute(f"DELETE FROM User WHERE id = {json['id']}")
             db.commit()
 
-
     return "wow"
+
 
 @app.route("/login", methods=["GET", "POST"])
 @cross_origin()
