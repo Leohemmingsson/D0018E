@@ -1,16 +1,34 @@
 <html>
+    <head>
+    </head>
 <body>
+    <script type="text/javascript">
+        function del(id) {
+            fetch('http://localhost:5000/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin':'*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({"id": id})
+            })
+        }
+    </script>
     <table>
         <tr>
+            <th>i</th>
             <th>id</th>
             <th>username</th>
             <th>type</th>
         </tr>
-    {% for user in users %}
+    {% for (i, user) in users %}
         <tr>
+            <th>{{i}}</th>
             <th>{{user[0]}}</th>
             <th>{{user[1]}}</th>
             <th>{{user[5]}}</th>
+            <th>
+                <input value="delete" type="button" onclick="del({{user[0]}});console.log({{user[0]}})">
+            </th>
         </tr>
     {% endfor %}
 

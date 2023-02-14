@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, make_response, g, redirect, url_for
+from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
 import mysql.connector
@@ -8,6 +9,8 @@ from schemas import user_schema
 
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 def get_db():
@@ -34,7 +37,6 @@ def is_admin(cookie: any) -> bool:
     c.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
     return len(c.fetchall()) > 0
 
-
 @app.teardown_appcontext
 def close_db(exception):
     db = g.pop("db", None)
@@ -44,6 +46,7 @@ def close_db(exception):
 
 
 @app.route("/")
+@cross_origin()
 def index():
     return render_template(
         "index.html",
@@ -52,6 +55,7 @@ def index():
 
 
 @app.route("/admin", methods=["GET"])
+@cross_origin()
 def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
@@ -66,13 +70,14 @@ def admin():
     c.execute("select * from User")
     users = c.fetchall()
 
-    return render_template("admin.html", users=users)
+    return render_template("admin.html", users=enumerate(users))
 
 
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
 # POST to add a user, PUT to update a users permissions, DELETE to delete.
 @app.route("/admin/users", methods=["POST", "PUT", "DELETE"])
+@cross_origin()
 def users():
     req_cookies = request.cookies.get("verification")
     #if not is_admin(req_cookies):
@@ -86,10 +91,13 @@ def users():
         except:
             return "Invalid json!"
 
-
-
         # Create a new user
-        pass
+        db = get_db()
+        c = db.cursor()
+        sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
+        val = (json["username"], json["first_name"], json["last_name"], json["password"], "customer")
+        c.execute(sql, val)
+        db.commit()
 
     if request.method == "PUT":
         # Promote a user to admin
@@ -97,10 +105,20 @@ def users():
 
     if request.method == "DELETE":
         # Delete a user
-        pass 
+        json = request.get_json(force=True)
+        if json["id"]:
+            print(f"Trying to delete user with id {json['id']}")
+
+            db = get_db()
+            c = db.cursor()
+            c.execute(f"DELETE FROM User WHERE id = {json['id']}")
+            db.commit()
+
 
     return "wow"
+
 @app.route("/login", methods=["GET", "POST"])
+@cross_origin()
 def login():
     if request.method == "GET":
         return render_template("login.html")
