@@ -57,8 +57,8 @@
                 </form>
 
                 <div class="text-end">
-                    <a href="/login.html" role="button" class="btn btn-light text-dark me-2">Login</a>
-                    <a href="/signup.html" role="button" class="btn btn-primary">Sign-up</a>
+                    <a href="/login" role="button" class="btn btn-light text-dark me-2">Login</a>
+                    <a href="/signup" role="button" class="btn btn-primary">Sign-up</a>
                 </div>
             </div>
         </div>
@@ -73,8 +73,9 @@
         <div class="collapse" id="collapseExample">
             <div class="card card-body">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="/" class="link-dark rounded">Show all products</a></li>
                     {% for e in tags%}
-                        <li><a href="#" class="link-dark rounded">{{e}}</a></li>
+                    <li><a href={{e.href}} class="link-dark rounded">{{e.name}}</a></li>
                     {% endfor %}
                 </ul>
             </div>
@@ -84,7 +85,7 @@
     <div class="container-fluid">
         <!-- Beginning of the first row-->
         <div class="row">
-            {% for item in variable%}
+            {% for item in products%}
             <div class="col-4">
                 <div class="card" style="width: 16rem;">
                     <img class="card-img-top" src={{item.image}} alt="No image found">
