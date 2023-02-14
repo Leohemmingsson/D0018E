@@ -85,14 +85,14 @@
     <div class="container-fluid">
         <!-- Beginning of the first row-->
         <div class="row">
-            {% for item in products%}
+            {% for one_item in items%}
             <div class="col-4">
                 <div class="card" style="width: 16rem;">
-                    <img class="card-img-top" src={{item.image}} alt="No image found">
+                    <img class="card-img-top" src={{one_item.image}} alt="No image found">
                     <div class="card-body">
-                        <h5 class="card-title">{{item.name}}</h5>
-                        <p class="card-text">{{item.description}}</p>
-                        <a href={{item.href}} class="btn btn-primary">Item page</a>
+                        <h5 class="card-title">{{one_item.name}}</h5>
+                        <p class="card-text">{{one_item.description}}</p>
+                        <a href={{one_item.href}} class="btn btn-primary">Item page</a>
                     </div>
                 </div>
             </div>

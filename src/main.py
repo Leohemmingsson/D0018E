@@ -44,42 +44,32 @@ def close_db(exception):
 
 @app.route("/")
 def index():
-    sortBy = [request.args.get("sortby")]
+    sort_by = [request.args.get("sortby")]
     mydb = get_db()
     cursor = mydb.cursor()
 
-    if sortBy[0] == None:
+    if sort_by[0] == None:
         cursor.execute("SELECT * FROM Item")
     else:
 
         sql = f"SELECT Item.* FROM Item LEFT JOIN TagGroup ON Item.id = TagGroup.item_id WHERE TagGroup.item_id IN (SELECT Tag.id FROM Tag WHERE Tag.value = %s)"
         print(sql)
-        cursor.execute(sql, sortBy)
+        cursor.execute(sql, sort_by)
     fetched_products = cursor.fetchall()
-    products = []
-    for one_product in fetched_products:
-        products.append(
-            Item(
-                id=one_product[0],
-                name=one_product[1],
-                quantity=one_product[3],
-                price=one_product[4],
-                image=one_product[5],
-                description=one_product[2],
-                href=f"/product/{one_product[0]}",
-            )
-        )
+
+    items = [Item(product) for product in fetched_products]
 
     cursor.execute("SELECT * FROM Tag")
     fetched_tags = cursor.fetchall()
     tags = []
     for one_tag in fetched_tags:
-        print(one_tag)
         tags.append({"name": one_tag[1], "href": f"/?sortby={one_tag[1]}"})
+
+    tags = [{"name": name, "href": f"/?sortby={name}"} for (_, name) in fetched_tags]
 
     return render_template(
         "index.html",
-        products=products,
+        items=items,
         tags=tags,
     )
 
