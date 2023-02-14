@@ -116,13 +116,13 @@ def login():
             log.log(f"Someone tried to log in as {username} with password {password}")
             return render_template("login.html", error="Account not found!")
 
-@app.route("/signup", methods=["GET", "POST"])
+@app.route("/signup")
 def signup():
     return render_template("signup.html")
 
-@app.route("/tos", methods=["GET", "POST"])
-def tos():
-    return render_template("tos.html")
+@app.route("/terms_of_service")
+def terms_of_service():
+    return render_template("terms_of_service.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
