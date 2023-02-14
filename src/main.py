@@ -13,9 +13,11 @@ log = logger(logger.STDOUT | logger.FILE)
 def get_logger():
     return log
 
+
 from item import Item
 
 app = Flask(__name__)
+
 
 def get_db():
     if "db" not in g:
@@ -42,14 +44,33 @@ def close_db(exception):
 
 @app.route("/")
 def index():
-    products = []
-    for i in range(10):
-        products.append(
-            Item(id=1, name="awesome monitor", price=100, quantity=1, image="https://i.computersalg.dk/digitalcontent/360/4305/43053377.jpg", description="This is a monitor", href="/product/1")
-        )
+    sort_by = [request.args.get("sortby")]
+    mydb = get_db()
+    cursor = mydb.cursor()
+
+    if sort_by[0] == None:
+        cursor.execute("SELECT * FROM Item")
+    else:
+
+        sql = f"SELECT Item.* FROM Item LEFT JOIN TagGroup ON Item.id = TagGroup.item_id WHERE TagGroup.item_id IN (SELECT Tag.id FROM Tag WHERE Tag.value = %s)"
+        print(sql)
+        cursor.execute(sql, sort_by)
+    fetched_products = cursor.fetchall()
+
+    items = [Item(product) for product in fetched_products]
+
+    cursor.execute("SELECT * FROM Tag")
+    fetched_tags = cursor.fetchall()
+    tags = []
+    for one_tag in fetched_tags:
+        tags.append({"name": one_tag[1], "href": f"/?sortby={one_tag[1]}"})
+
+    tags = [{"name": name, "href": f"/?sortby={name}"} for (_, name) in fetched_tags]
+
     return render_template(
         "index.html",
-        variable=products,
+        items=items,
+        tags=tags,
     )
 
 
@@ -96,7 +117,6 @@ def login():
             # TODO: Add as proper logging later
 
             log.log(f"{username} ({uid}) logged in as {user_type}")
-
 
             # Redirect based on user type
             if user_type == "admin":
