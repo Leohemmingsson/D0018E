@@ -144,5 +144,9 @@ def signup():
 def terms_of_service():
     return render_template("terms_of_service.html")
 
+@app.route("/item_page")
+def item_page():
+    return render_template("item_page.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
