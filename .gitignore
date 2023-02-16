@@ -132,3 +132,6 @@ dmypy.json
 # MAX STUFF
 LOG_OUTPUT.txt
 justfile
+
+# LEO STUFF
+test.py
