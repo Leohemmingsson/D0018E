@@ -1,21 +1,19 @@
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D0018E</title>
-    <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-        crossorigin="anonymous"></script>
-</head>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>D0018E</title>
+        <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+            integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+            integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+            crossorigin="anonymous"></script>
+    </head>
 <body>
     <script type="text/javascript">
         function del(id) {
@@ -26,7 +24,49 @@
                 method: 'DELETE',
                 body: JSON.stringify({ "id": id })
             })
+
+            location.reload()
         }
+
+        function reset_form() {
+            document.getElementById("user_form").reset()
+        }
+
+        function add_user() {
+            let first_name = document.getElementById("first_name").value;
+            let last_name = document.getElementById("last_name").value;
+            let password = document.getElementById("password").value;
+            let username = document.getElementById("username").value;
+
+            fetch('http://localhost:5000/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'POST',
+                body: JSON.stringify({
+                    "username" : username,
+                    "first_name" : first_name,
+                    "last_name" : last_name,
+                    "password" : password,
+                })
+            })
+
+            reset_form()
+        }
+
+        function update(id) {
+            let form = document.getElementById("user_type");
+            let new_type = form.value;
+
+            fetch('http://localhost:5000/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({ "id": id, "type" : new_type })
+            })
+        }
+
     </script>
     <table>
         <tr>
@@ -42,6 +82,20 @@
             <th>{{user[1]}}</th>
             <th>{{user[5]}}</th>
             <th>
+                <form onsubmit="update({{user[0]}})">
+                    <select id="user_type" name='type' onchange='update({{user[0]}})'>
+                        {% if user[5] == 'admin' %}
+                            <option value='admin'>admin</option>
+                            <option value='customer'>customer</option>
+                        {% else %}
+                            <option value='customer'>customer</option>
+                            <option value='admin'>admin</option>
+                        {% endif %}
+                    </select>
+                </form>
+
+            </th>
+            <th>
                 <input value="delete" type="button" onclick="del({{user[0]}});console.log({{user[0]}})">
             </th>
         </tr>
@@ -55,7 +109,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+        aria-hidden="true" onsubmit="add_user()">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -65,18 +119,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <lable for="First name">First name</lable>
-                    <input type="text" class="form-control" id="First name"></input>
-                    <label for="Last name">Last name</label>
-                    <input type="text" class="form-control" id="Last name"></input>
-                    <label for="Username">Username</label>
-                    <input type="text" class="form-control" id="Username"></input>
-                    <label for="Password">Password</label>
-                    <input type="text" class="form-control" id="Password">Password</input>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <form id="user_form" onsubmit="add_user()">
+                        <lable for="First name">First name</lable>
+                        <input name="first_name" type="text" class="form-control" id="first_name"></input>
+                        <label for="Last name">Last name</label>
+                        <input name="last_name" type="text" class="form-control" id="last_name"></input>
+                        <label for="Username">Username</label>
+                        <input name="username" type="text" class="form-control" id="username"></input>
+                        <label for="Password">Password</label>
+                        <input name="password" type="text" class="form-control" id="password"></input>
+
+                        <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
+                    </form>
                 </div>
             </div>
         </div>

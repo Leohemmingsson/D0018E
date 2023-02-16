@@ -76,8 +76,8 @@ def admin():
 
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
-# POST to add a user, PUT to update a users permissions, DELETE to delete.
-@app.route("/admin/users", methods=["POST", "PUT", "DELETE"])
+# POST to add a user, PATCH to update a users permissions, DELETE to delete.
+@app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
 @cross_origin()
 def users():
     req_cookies = request.cookies.get("verification")
@@ -103,17 +103,20 @@ def users():
             json["password"],
             "customer",
         )
+        print(val)
         c.execute(sql, val)
         db.commit()
 
-    if request.method == "PUT":
+    if request.method == "PATCH":
         # Promote a user to admin
         json = request.get_json(force=True)
+        print(json)
         if json["id"] and json["type"]:
             db = get_db()
             c = db.cursor()
             c.execute(f"UPDATE User SET type = \"{json['type']}\" where id = {json['id']}")
             db.commit()
+            print(f"Set user with id {json['id']} to {json['type']}")
 
 
     if request.method == "DELETE":
