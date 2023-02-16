@@ -1,2 +1,0 @@
-
-mydb = connect()
