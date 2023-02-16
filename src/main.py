@@ -114,10 +114,11 @@ def users():
         if json["id"] and json["type"]:
             db = get_db()
             c = db.cursor()
-            c.execute(f"UPDATE User SET type = \"{json['type']}\" where id = {json['id']}")
+            c.execute(
+                f"UPDATE User SET type = \"{json['type']}\" where id = {json['id']}"
+            )
             db.commit()
             print(f"Set user with id {json['id']} to {json['type']}")
-
 
     if request.method == "DELETE":
         # Delete a user
