@@ -81,8 +81,8 @@ def admin():
 @cross_origin()
 def users():
     req_cookies = request.cookies.get("verification")
-    # if not is_admin(req_cookies):
-    # return "403: Forbidden"
+    if not is_admin(req_cookies):
+        return "403: Forbidden"
 
     if request.method == "POST":
         json = request.get_json(force=True)

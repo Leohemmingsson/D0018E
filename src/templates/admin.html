@@ -26,30 +26,7 @@
                 },
                 method: 'DELETE',
                 body: JSON.stringify({ "id": id })
-            })
-
-            //location.reload()
-        }
-
-        function reset_form() {
-            document.getElementById("user_form").reset()
-        }
-
-        function add_user() {
-            let first_name = document.getElementById("first_name").value;
-            let last_name = document.getElementById("last_name").value;
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
-
-            fetch('http://localhost:5000/admin/users', {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                method: 'POST',
-                body: JSON.stringify({ "first_name": first_name, "last_name": last_name, "password": password, "username": username })
-            })
-
-            //reset_form()
+            }).then(() => window.location.reload());
         }
 
         function update(id) {
@@ -62,9 +39,8 @@
                 },
                 method: 'PATCH',
                 body: JSON.stringify({ "id": id, "type": new_type })
-            })
+            }).then(() => window.location.reload());
         }
-
     </script>
     <table>
         <tr>
@@ -105,6 +81,9 @@
             class="fa-solid fa-plus"></i>
     </button>
 
+     <!-- Dummy frame to prevent form target from redirecting us... -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -116,8 +95,8 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="user_form" onsubmit="add_user()">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="add-user-form" target="dummyframe">
                         <lable for="First name">First name</lable>
                         <input name="first_name" type="text" class="form-control" id="first_name"></input>
                         <label for="Last name">Last name</label>
@@ -127,11 +106,31 @@
                         <label for="Password">Password</label>
                         <input name="password" type="text" class="form-control" id="password"></input>
                         <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById("add-user-form").onsubmit = async(e) => {
+            e.preventDefault();
+            let first_name = document.getElementById("first_name").value;
+            let last_name = document.getElementById("last_name").value;
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            fetch("/admin/users", 
+                {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    method: "POST", 
+                    body: JSON.stringify({ "first_name": first_name, "last_name": last_name, "password": password, "username": username })
+                }
+            ).then(() => window.location.reload());
+        }
+
+    </script>
 </body>
 
 </html>
