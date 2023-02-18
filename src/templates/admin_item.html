@@ -17,37 +17,17 @@
 </head>
 
 <body>
-    <!-- <script type="text/javascript">
-        function del(id) {
-            fetch('http://localhost:5000/admin/users', {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                method: 'DELETE',
-                body: JSON.stringify({ "id": id })
-            })
-        } -->
-
-    <!-- <table>
+    <table>
         <tr>
-            <th>i</th>
-            <th>id</th>
-            <th>username</th>
-            <th>type</th>
+            <th>item name</th>
         </tr>
-        {% for (i, user) in users %}
+        {% for item in items %}
         <tr>
-            <th>{{i}}</th>
-            <th>{{user[0]}}</th>
-            <th>{{user[1]}}</th>
-            <th>{{user[5]}}</th>
-            <th>
-                <input value="delete" type="button" onclick="del({{user[0]}});console.log({{user[0]}})">
-            </th>
+            {{item.name}}
         </tr>
         {% endfor %}
 
-    </table> -->
+    </table>
     <!-- button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#examplemodal"><i
             class="fa-solid fa-plus"></i>

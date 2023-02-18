@@ -89,7 +89,18 @@ def admin():
 
 @app.route("/admin/items", methods=["GET", "POST", "DELETE", ])
 def items():
-    pass
+    if request.method == "GET":
+        items = g.db.get_items()
+
+        return render_template(
+            "admin_item.html",
+            items=items)
+
+    if request.method == "POST":
+        pass
+
+    if request.method == "DELETE":
+        pass
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
