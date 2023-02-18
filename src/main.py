@@ -103,14 +103,14 @@ def users():
             json["password"],
             "customer",
         )
-        print(val)
+        
         c.execute(sql, val)
         db.commit()
 
     if request.method == "PATCH":
         # Promote a user to admin
         json = request.get_json(force=True)
-        print(json)
+        
         if json["id"] and json["type"]:
             db = get_db()
             c = db.cursor()
