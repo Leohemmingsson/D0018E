@@ -87,6 +87,9 @@ def admin():
 
     return render_template("admin.html")
 
+@app.route("/admin/items", methods=["GET", "POST", "DELETE", ])
+def items():
+    pass
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
