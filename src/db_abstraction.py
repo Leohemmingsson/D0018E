@@ -48,3 +48,6 @@ class DB:
         user = self.cursor.fetchall()
 
         return user
+
+    def get_cart(self, id):
+        pass
