@@ -21,7 +21,6 @@ def get_logger():
     return log
 
 
-
 app = Flask(__name__)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
@@ -35,7 +34,6 @@ def init():
 @app.teardown_appcontext
 def close_db(exception):
     g.db.close()
-
 
 
 @app.route("/")
@@ -64,7 +62,9 @@ def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    print(f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}")
+    print(
+        f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}"
+    )
     if not g.db.is_admin(verification_cookie):
         return "403: Forbidden"
 
@@ -97,7 +97,7 @@ def admin_users():
     if request.method == "PATCH":
         # Promote a user to admin
         info = request.get_json(force=True)
-        
+
         if info["id"] and info["type"]:
             g.db.set_user_type(info["id"], info["type"])
             print(f"Set user with id {info['id']} to {info['type']}")
@@ -153,15 +153,19 @@ def login():
             return render_template("login.html", error="Account not found!")
 
 
-@app.route("/signup")
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    return render_template("signup.html")
+    if request.method == "GET":
+        return render_template("signup.html")
+    elif request.method == "POST":
+        if request.form["password"] == request.form["password2"]:
+            g.db.create_customer(request.form)
+            return "200"
 
 
 @app.route("/terms_of_service")
 def terms_of_service():
     return render_template("terms_of_service.html")
-
 
 
 if __name__ == "__main__":
