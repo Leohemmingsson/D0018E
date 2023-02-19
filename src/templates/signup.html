@@ -27,29 +27,24 @@
                             <div class="card-body p-5">
                                 <h2 class="text-uppercase text-center mb-5">Create an account</h2>
 
-                                <form>
+                                <form method="post">
+                                    <label for="first_name">first name</label>
+                                    <input type="text" name="first_name" value="" />
 
-                                    <div class="form-outline mb-4">
-                                        <input type="text" id="form3Example1cg" class="form-control form-control-lg" />
-                                        <label class="form-label" for="form3Example1cg">Your Name</label>
-                                    </div>
+                                    <label for="last_name">last name</label>
+                                    <input type="text" name="last_name" value="" />
 
-                                    <div class="form-outline mb-4">
-                                        <input type="email" id="form3Example3cg" class="form-control form-control-lg" />
-                                        <label class="form-label" for="form3Example3cg">Your Email</label>
-                                    </div>
+                                    <label for="username">username</label>
+                                    <input type="text" name="username" value="" />
 
-                                    <div class="form-outline mb-4">
-                                        <input type="password" id="form3Example4cg"
-                                            class="form-control form-control-lg" />
-                                        <label class="form-label" for="form3Example4cg">Password</label>
-                                    </div>
+                                    <label for="email">email</label>
+                                    <input type="email" name="email" value="" />
 
-                                    <div class="form-outline mb-4">
-                                        <input type="password" id="form3Example4cdg"
-                                            class="form-control form-control-lg" />
-                                        <label class="form-label" for="form3Example4cdg">Repeat your password</label>
-                                    </div>
+                                    <label for="password">password</label>
+                                    <input type="password" name="password" value="" />
+
+                                    <label for="password2">repeat password</label>
+                                    <input type="password" name="password2" value="" />
 
                                     <div class="form-check d-flex justify-content-center mb-5">
                                         <input class="form-check-input me-2" type="checkbox" value=""
@@ -61,10 +56,7 @@
                                         </label>
                                     </div>
 
-                                    <div class="d-flex justify-content-center">
-                                        <button type="button"
-                                            class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
-                                    </div>
+                                    <input type="submit" name="submit" value="submit" />
 
                                     <p class="text-center text-muted mt-5 mb-0">Have already an account? <a
                                             href="/login" class="fw-bold text-body"><u>Login here</u></a></p>

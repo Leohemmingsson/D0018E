@@ -153,9 +153,17 @@ def login():
             return render_template("login.html", error="Account not found!")
 
 
-@app.route("/signup")
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    return render_template("signup.html")
+    if request.method == "GET":
+        return render_template("signup.html")
+    elif request.method == "POST":
+        print(request.form["password"], request.form["password2"])
+
+        if request.form["password"] == request.form["password2"]:
+            g.db.create_customer(request.form)
+            return "200"
+
 
 
 @app.route("/terms_of_service")
