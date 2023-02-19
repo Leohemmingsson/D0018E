@@ -21,7 +21,6 @@ def get_logger():
     return log
 
 
-
 app = Flask(__name__)
 cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
@@ -35,7 +34,6 @@ def init():
 @app.teardown_appcontext
 def close_db(exception):
     g.db.close()
-
 
 
 @app.route("/")
@@ -64,7 +62,9 @@ def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    print(f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}")
+    print(
+        f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}"
+    )
     if not g.db.is_admin(verification_cookie):
         return "403: Forbidden"
 
@@ -97,7 +97,7 @@ def admin_users():
     if request.method == "PATCH":
         # Promote a user to admin
         info = request.get_json(force=True)
-        
+
         if info["id"] and info["type"]:
             g.db.set_user_type(info["id"], info["type"])
             print(f"Set user with id {info['id']} to {info['type']}")
@@ -111,21 +111,42 @@ def admin_users():
 
     return "200"
 
-@app.route("/admin/items", methods=["GET", "POST", "DELETE", ])
+
+@app.route(
+    "/admin/items",
+    methods=[
+        "GET",
+        "POST",
+        "DELETE",
+    ],
+)
 def items():
     if request.method == "GET":
         items = g.db.get_products()
         items = [Item(product) for product in items]
 
-        return render_template(
-            "admin_item.html",
-            items=items)
+        return render_template("admin_item.html", items=items)
 
     if request.method == "POST":
-        pass
+        # Convert the form into a item.
+        # Item() needs the following members in the dictionary:
+        # id, description, name, quantity, price, image
+        item = Item(request.form)
+
+        g.db.add_product(item)
+
+        # Give a api friendly response.
+        return "200"
 
     if request.method == "DELETE":
-        pass
+        id = request.get_json(force=True)["id"]
+
+        # None check
+        if id:
+            g.db.remove_product(id)
+
+            return "200"
+
 
 @app.route("/login", methods=["GET", "POST"])
 @cross_origin()
@@ -176,7 +197,6 @@ def signup():
 @app.route("/terms_of_service")
 def terms_of_service():
     return render_template("terms_of_service.html")
-
 
 
 if __name__ == "__main__":
