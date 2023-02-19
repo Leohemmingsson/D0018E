@@ -5,6 +5,7 @@ import os
 import mysql.connector
 from item import Item
 import jsonschema
+from jsonschema.exceptions import ValidationError
 from schemas import user_schema
 
 # Import logger object and set it up to log to stdout and a file
@@ -77,7 +78,7 @@ def admin():
 # POST to add a user, PATCH to update a users permissions, DELETE to delete.
 @app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
 @cross_origin()
-def users():
+def admin_users():
     req_cookies = request.cookies.get("verification")
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
@@ -87,7 +88,8 @@ def users():
 
         try:
             jsonschema.validate(instance=json, schema=user_schema)
-        except:
+            user_json = json
+        except ValidationError:
             return "Invalid json!"
 
         # Create a new user
@@ -95,10 +97,10 @@ def users():
         c = db.cursor()
         sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
         val = (
-            json["username"],
-            json["first_name"],
-            json["last_name"],
-            json["password"],
+            user_json["username"],
+            user_json["first_name"],
+            user_json["last_name"],
+            user_json["password"],
             "customer",
         )
         
@@ -107,11 +109,11 @@ def users():
 
     if request.method == "PATCH":
         # Promote a user to admin
-        json = request.get_json(force=True)
+        info = request.get_json(force=True)
         
-        if json["id"] and json["type"]:
-            g.db.set_user_type(json["id"], json["type"])
-            print(f"Set user with id {json['id']} to {json['type']}")
+        if info["id"] and info["type"]:
+            g.db.set_user_type(info["id"], info["type"])
+            print(f"Set user with id {info['id']} to {info['type']}")
 
     if request.method == "DELETE":
         # Delete a user
@@ -120,7 +122,7 @@ def users():
             print(f"Trying to delete user with id {json['id']}")
             g.db.delete_user_by_id(json["id"])
 
-    return "wow"
+    return "200"
 
 
 @app.route("/login", methods=["GET", "POST"])
