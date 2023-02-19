@@ -83,6 +83,15 @@ class DB:
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
 
+    ### TODO METHODS ###
+    def add_product(self, item: Item):
+        # Should recieve a Item and add it to the database
+        pass
+
+    def remove_product(self, item_id):
+        # Should remove the item with the specified item_id
+        pass
+
 
 if __name__ == "__main__":
     db = DB()
