@@ -114,7 +114,8 @@ def admin_users():
 @app.route("/admin/items", methods=["GET", "POST", "DELETE", ])
 def items():
     if request.method == "GET":
-        items = g.db.get_items()
+        items = g.db.get_products()
+        items = [Item(product) for product in items]
 
         return render_template(
             "admin_item.html",
