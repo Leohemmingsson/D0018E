@@ -51,3 +51,49 @@ class DB:
 
     def get_cart(self, id):
         pass
+    def create_customer(self, user_info):
+        sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
+        val = (
+            user_info["username"],
+            user_info["first_name"],
+            user_info["last_name"],
+            user_info["password"],
+            "customer",
+        )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def set_user_type(self, user_id, new_type):
+        self.cursor.execute(
+            f"UPDATE User SET type = \"{new_type}\" where id = {user_id}"
+        )
+        self.mydb.commit()
+
+    def delete_user_by_id(self, user_id):
+        self.cursor.execute(f"DELETE FROM User WHERE id = {json['id']}")
+        self.mydb.commit()
+
+    def is_admin(self, cookie):
+        if not cookie:
+            return False
+
+        self.cursor.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
+        return len(self.cursor.fetchall()) > 0
+
+    def get_users(self):
+        self.cursor.execute("select * from User")
+        return self.cursor.fetchall()
+
+
+if __name__ == "__main__":
+    db = DB()
+
+    user_info = {
+        "username": "testP",
+        "first_name": "Pelle",
+        "last_name": "Olsson",
+        "password": "Pass",
+    }
+
+    print(db.create_customer(user_info))
