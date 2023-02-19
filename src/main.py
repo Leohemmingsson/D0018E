@@ -31,17 +31,6 @@ def init():
     g.db = DB()
 
 
-
-def is_admin(cookie: any) -> bool:
-    if not cookie:
-        return False
-
-    db = get_db()
-    c = db.cursor()
-    c.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
-    return len(c.fetchall()) > 0
-
-
 @app.teardown_appcontext
 def close_db(exception):
     g.db.close()
@@ -74,15 +63,11 @@ def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    print(f"is_admin: {is_admin(verification_cookie)}, cookie: {verification_cookie}")
-    if not is_admin(verification_cookie):
+    print(f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}")
+    if not g.db.is_admin(verification_cookie):
         return "403: Forbidden"
 
-    db = get_db()
-    c = db.cursor()
-
-    c.execute("select * from User")
-    users = c.fetchall()
+    users = g.db.get_users()
 
     return render_template("admin.html", users=enumerate(users))
 
@@ -94,7 +79,7 @@ def admin():
 @cross_origin()
 def users():
     req_cookies = request.cookies.get("verification")
-    if not is_admin(req_cookies):
+    if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
 
     if request.method == "POST":
@@ -125,12 +110,7 @@ def users():
         json = request.get_json(force=True)
         
         if json["id"] and json["type"]:
-            db = get_db()
-            c = db.cursor()
-            c.execute(
-                f"UPDATE User SET type = \"{json['type']}\" where id = {json['id']}"
-            )
-            db.commit()
+            g.db.set_user_type(json["id"], json["type"])
             print(f"Set user with id {json['id']} to {json['type']}")
 
     if request.method == "DELETE":
@@ -138,11 +118,7 @@ def users():
         json = request.get_json(force=True)
         if json["id"]:
             print(f"Trying to delete user with id {json['id']}")
-
-            db = get_db()
-            c = db.cursor()
-            c.execute(f"DELETE FROM User WHERE id = {json['id']}")
-            db.commit()
+            g.db.delete_user_by_id(json["id"])
 
     return "wow"
 

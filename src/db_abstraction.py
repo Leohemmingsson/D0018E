@@ -61,7 +61,27 @@ class DB:
 
         self.cursor.execute(sql, val)
         self.mydb.commit()
-        return 1
+
+    def set_user_type(self, user_id, new_type):
+        self.cursor.execute(
+            f"UPDATE User SET type = \"{new_type}\" where id = {user_id}"
+        )
+        self.mydb.commit()
+
+    def delete_user_by_id(self, user_id):
+        self.cursor.execute(f"DELETE FROM User WHERE id = {json['id']}")
+        self.mydb.commit()
+
+    def is_admin(self, cookie):
+        if not cookie:
+            return False
+
+        self.cursor.execute(f'SELECT * FROM User WHERE id = {cookie} and type = "admin"')
+        return len(self.cursor.fetchall()) > 0
+
+    def get_users(self):
+        self.cursor.execute("select * from User")
+        return self.cursor.fetchall()
 
 
 if __name__ == "__main__":
