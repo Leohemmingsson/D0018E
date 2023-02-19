@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request, make_response, g, redirect, url_for
+from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
 import mysql.connector
+from item import Item
+import jsonschema
+from jsonschema.exceptions import ValidationError
+from schemas import user_schema
 
 # Import logger object and set it up to log to stdout and a file
 from logger import logger
@@ -16,9 +21,10 @@ def get_logger():
     return log
 
 
-from item import Item
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config["CORS_HEADERS"] = "Content-Type"
 
 
 @app.before_request
@@ -31,7 +37,9 @@ def close_db(exception):
     g.db.close()
 
 
+
 @app.route("/")
+@cross_origin()
 def index():
     sort_by = request.args.get("sortby")
 
@@ -51,61 +59,98 @@ def index():
 
 
 @app.route("/admin", methods=["GET"])
+@cross_origin()
 def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    # No cookie, user definetly unauthorized.
-    if not verification_cookie:
-        return "Access denied!"
+    print(f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}")
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
 
-    # TODO: Check if the verification cookie matches any admin in the database
+    users = g.db.get_users()
 
-    return render_template("admin.html")
+    return render_template("admin.html", users=enumerate(users))
+
+
+# Route for the admins to interact with the users.
+# Requires a valid admin id in cookies.
+# POST to add a user, PATCH to update a users permissions, DELETE to delete.
+@app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
+@cross_origin()
+def admin_users():
+    req_cookies = request.cookies.get("verification")
+    if not g.db.is_admin(req_cookies):
+        return "403: Forbidden"
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+
+        try:
+            jsonschema.validate(instance=json, schema=user_schema)
+            user_json = json
+        except ValidationError:
+            return "Invalid json!"
+
+        g.db.create_customer(user_json)
+
+    if request.method == "PATCH":
+        # Promote a user to admin
+        info = request.get_json(force=True)
+        
+        if info["id"] and info["type"]:
+            g.db.set_user_type(info["id"], info["type"])
+            print(f"Set user with id {info['id']} to {info['type']}")
+
+    if request.method == "DELETE":
+        # Delete a user
+        json = request.get_json(force=True)
+        if json["id"]:
+            print(f"Trying to delete user with id {json['id']}")
+            g.db.delete_user_by_id(json["id"])
+
+    return "200"
 
 
 @app.route("/login", methods=["GET", "POST"])
+@cross_origin()
 def login():
     if request.method == "GET":
-        print("oo")
         return render_template("login.html")
 
-    username = request.form["uname"]
-    print(username)
-    password = request.form["psw"]
-    print(password)
+    elif request.method == "POST":
+        username: str = request.form["uname"]
+        password: str = request.form["psw"]
 
-    # Check if password and username is in the users table.
-    result = g.db.is_username_password(username, password)
+        # Check if password and username is in the users table.
+        result = g.db.is_username_password(username, password)
 
-    # The query returned results and, therefore, user(s)
-    if len(result) > 0:
-        # Extract relevant information from the DB response
-        uid: str = result[0][0]
-        username: str = result[0][1]
-        user_type: str = result[0][5]
+        if len(result) > 0:
 
-        # TODO: Add as proper logging later
+            # Extract relevant information from the DB response
+            uid: str = result[0][0]
+            username: str = result[0][1]
+            user_type: str = result[0][5]
 
-        log.log(f"{username} ({uid}) logged in as {user_type}")
+            # TODO: Add as proper logging later
+            print(f"{username} ({uid}) logged in as {user_type}")
 
-        # Redirect based on user type
-        if user_type == "admin":
-            log.log("redirecting to admin.html")
-            res = make_response(redirect(url_for("admin")))
+            # Redirect based on user type
+            if user_type == "admin":
+                print("redirecting to admin.html")
+                res = make_response(redirect(url_for("admin")))
+            else:
+                print("redirecting to index.html")
+                res = make_response(redirect(url_for("index")))
+
+            res.set_cookie("verification", str(uid))
+            return res
         else:
-            log.log("redirecting to index.html")
-            res = make_response(redirect(url_for("index")))
+            # TODO: Maybe a fail2ban system in the future.
 
-        res.set_cookie("verification", str(uid))
-        return res
-
-    else:
-        # TODO: Maybe a fail2ban system in the future.
-
-        # Invalid login! Return a error and log the event.
-        log.log(f"Someone tried to log in as {username} with password {password}")
-        return render_template("login.html", error="Account not found!")
+            # Invalid login! Return a error and log the event.
+            log.log(f"Someone tried to log in as {username} with password {password}")
+            return render_template("login.html", error="Account not found!")
 
 
 @app.route("/signup")
@@ -116,6 +161,7 @@ def signup():
 @app.route("/terms_of_service")
 def terms_of_service():
     return render_template("terms_of_service.html")
+
 
 
 if __name__ == "__main__":
