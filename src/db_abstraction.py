@@ -48,3 +48,30 @@ class DB:
         user = self.cursor.fetchall()
 
         return user
+
+    def create_customer(self, user_info):
+        sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
+        val = (
+            user_info["username"],
+            user_info["first_name"],
+            user_info["last_name"],
+            user_info["password"],
+            "customer",
+        )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+        return 1
+
+
+if __name__ == "__main__":
+    db = DB()
+
+    user_info = {
+        "username": "testP",
+        "first_name": "Pelle",
+        "last_name": "Olsson",
+        "password": "Pass",
+    }
+
+    print(db.create_customer(user_info))
