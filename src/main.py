@@ -152,17 +152,12 @@ def login():
             log.log(f"Someone tried to log in as {username} with password {password}")
             return render_template("login.html", error="Account not found!")
 
-# GET    return a json object of the items in the cart for the user
 # POST   add a item to the cart
 # DELETE delete a item from the cart
-@app.route("/cart", methods=["GET", "POST", "DELETE"])
+@app.route("/cart", methods=["POST", "DELETE"])
 def cart():
-    id: str = request.cookies.get("verification")
-
-    if request.method == "GET":
-        cart_items = g.db.get_cart(id)
-
-    elif request.method == "POST":
+    # Get the cart content by using the g.db method inside the render_template
+    if request.method == "POST":
         pass
 
     elif request.method == "DELETE":
