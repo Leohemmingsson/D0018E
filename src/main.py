@@ -92,20 +92,7 @@ def admin_users():
         except ValidationError:
             return "Invalid json!"
 
-        # Create a new user
-        db = get_db()
-        c = db.cursor()
-        sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
-        val = (
-            user_json["username"],
-            user_json["first_name"],
-            user_json["last_name"],
-            user_json["password"],
-            "customer",
-        )
-        
-        c.execute(sql, val)
-        db.commit()
+        g.db.create_customer(user_json)
 
     if request.method == "PATCH":
         # Promote a user to admin
