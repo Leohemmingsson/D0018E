@@ -1,1 +1,0 @@
-Starting logging with options: stdout, file (LOG_OUTPUT.txt)
