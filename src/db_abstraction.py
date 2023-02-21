@@ -67,7 +67,7 @@ class DB:
         self.mydb.commit()
 
     def delete_user_by_id(self, user_id):
-        self.cursor.execute(f"DELETE FROM User WHERE id = {user_id['id']}")
+        self.cursor.execute(f"DELETE FROM User WHERE id = {user_id}")
         self.mydb.commit()
 
     def is_admin(self, cookie):
