@@ -34,6 +34,9 @@
         {% endfor %}
 
     </table>
+     <!-- Dummy frame to prevent form target from redirecting us... -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
     <!-- button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#examplemodal"><i
             class="fa-solid fa-plus"></i>
@@ -51,18 +54,20 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <lable for="First name">First name</lable>
-                    <input type="text" class="form-control" id="First name"></input>
-                    <label for="Last name">Last name</label>
-                    <input type="text" class="form-control" id="Last name"></input>
-                    <label for="Username">Username</label>
-                    <input type="text" class="form-control" id="Username"></input>
-                    <label for="Password">Password</label>
-                    <input type="text" class="form-control" id="Password">Password</input>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <form action="" id="add-item-form" target="dummyframe" method="post">
+                        <lable for="name">Name</lable>
+                        <input name="name" type="text" class="form-control" id="name"></input>
+                        <label for="description">Description</label>
+                        <input name="description" type="text" class="form-control" id="description"></input>
+                        <label for="quantity">Quantity</label>
+                        <input name="quantity" type="text" class="form-control" id="quantity"></input>
+                        <label for="price">Price</label>
+                        <input name="price" type="text" class="form-control" id="price"></input>
+                        <label for="image">Image link</label>
+                        <input name="image" type="text" class="form-control" id="image"></input>
+
+                        <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
+                    </form>
                 </div>
             </div>
         </div>
