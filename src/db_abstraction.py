@@ -35,6 +35,14 @@ class DB:
 
         return fetched_products
 
+    def get_product_by_id(self, product_id):
+        sql = "SELECT * FROM Item WHERE id = %s"
+        val = (product_id,)
+        self.cursor.execute(sql, val)
+        fetched_products = self.cursor.fetchone()
+
+        return fetched_products
+
     def get_tags(self):
         self.cursor.execute("SELECT * FROM Tag")
         fetched_tags = self.cursor.fetchall()
@@ -89,6 +97,12 @@ class DB:
     def get_users(self):
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
+
+    def is_product(self, product_id):
+        sql = "SELECT * FROM Item WHERE id = %s"
+        val = (product_id,)
+        self.cursor.execute(sql, val)
+        return len(self.cursor.fetchall()) > 0
 
     ### STUFF WITH CART ###
 

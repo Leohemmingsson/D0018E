@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D0018E</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
+    <title>D0018E</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    {% include "components/navbar.html" %}
+    <!-- THIS IS START OF PRODUCT PAGE  -->
+    <section style="background-color: #eee;">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-4">
+                    <div class="card" style="border-radius: 15px;">
+                        <div class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
+                            data-mdb-ripple-color="light">
+                            <!-- GET ITEMS PICTURE HERE OOOOO INSTEAD OF THIS ONE -->
+                            <img src={{item.image}} style="border-top-left-radius: 15px; border-top-right-radius: 15px;"
+                                class="img-fluid" alt="Laptop" />
+                            <a href="#!">
+                                <div class="mask"></div>
+                            </a>
+                        </div>
+                        <div class="card-body pb-0">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p><a href="#!" class="text-dark">{{item.name}}</a></p>
+                                    <p class="small text-muted">Lable, not implemented yet</p>
+                                </div>
+                                <!-- Just loop here and see how many stars should be shown. Always round up :) -->
+                                <div>
+                                    <div class="d-flex flex-row justify-content-end mt-1 mb-4 text-danger">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <p class="small text-muted">Rated 4.0/5</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-0" />
+                        <div class="card-body pb-0">
+                            <div class="d-flex justify-content-between">
+                                <!-- IMPLEMENT COST OF PRODUCT HERE INSTEAD  -->
+                                <p> Cost: </p>
+                                <p><a href="#!" class="text-dark">{{item.price}} kr</a></p>
+                            </div>
+                        </div>
+                        <hr class="my-0" />
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+                                <a href="/" class="text-dark fw-bold">Cancel</a>
+                                <!-- SEND THAT SHIT TO OUR CART BABYYY WITH THE BUTTON HERE-->
+                                <button type="button" class="btn btn-primary">Buy now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THIS IS WHERE THE COMMENTS START OwO-->
+    <section style="background-color: #eee;">
+        <div class="container my-5 py-5 text-dark">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-6">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <div class="d-flex flex-start w-100">
+                                <div class="w-100">
+                                    <h5>Write your review here</h5>
+                                    <div class="form-outline form-white mb-4">
+                                        <textarea class="form-control" id="reviewText" rows="4"
+                                            type="review"></textarea>
+                                        <label class="form-label" form="reviewText"></label>
+                                        <div class="form-outline form-white mb-4">
+                                            <input type="rating" id="typeRating" class="form-control form-control-lg" />
+                                            <label class="form-label" for="typePasswordX">Give product 1-5 in
+                                                rating</label>
+                                        </div>
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <button type="button" type="submit" class="btn btn-success">
+                                                Send <i class="fas fa-long-arrow-alt-right ms-1"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- THIS IS END OF COMMENTS-->
+</body>
+
+</html>
