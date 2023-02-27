@@ -173,6 +173,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.remove_from_cart(cart_id, item_id)
+        print(f"Removing item #{item_id} from cart #{cart_id}")
 
     return "200"
 
