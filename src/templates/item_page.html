@@ -39,9 +39,8 @@
                         <div class="bg-image hover-overlay ripple ripple-surface ripple-surface-light"
                             data-mdb-ripple-color="light">
                             <!-- GET ITEMS PICTURE HERE OOOOO INSTEAD OF THIS ONE -->
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/12.webp"
-                                style="border-top-left-radius: 15px; border-top-right-radius: 15px;" class="img-fluid"
-                                alt="Laptop" />
+                            <img src={{item.image}} style="border-top-left-radius: 15px; border-top-right-radius: 15px;"
+                                class="img-fluid" alt="Laptop" />
                             <a href="#!">
                                 <div class="mask"></div>
                             </a>
@@ -49,8 +48,8 @@
                         <div class="card-body pb-0">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <p><a href="#!" class="text-dark">Dell Xtreme 270</a></p>
-                                    <p class="small text-muted">Laptops</p>
+                                    <p><a href="#!" class="text-dark">{{item.name}}</a></p>
+                                    <p class="small text-muted">Lable, not implemented yet</p>
                                 </div>
                                 <!-- Just loop here and see how many stars should be shown. Always round up :) -->
                                 <div>
@@ -69,7 +68,7 @@
                             <div class="d-flex justify-content-between">
                                 <!-- IMPLEMENT COST OF PRODUCT HERE INSTEAD  -->
                                 <p> Cost: </p>
-                                <p><a href="#!" class="text-dark">$3,999</a></p>
+                                <p><a href="#!" class="text-dark">{{item.price}} kr</a></p>
                             </div>
                         </div>
                         <hr class="my-0" />

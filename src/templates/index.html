@@ -42,20 +42,19 @@
     <div class="container-fluid">
         <!-- Beginning of the first row-->
         <div class="row">
-            <div class="col-sm-8">
-                {% for one_item in items%}
-                <div class="col-sm-4">
-                    <div class="card" style="width: 16rem;">
-                        <img class="card-img-top" src={{one_item.image}} alt="No image found">
-                        <div class="card-body">
-                            <h5 class="card-title">{{one_item.name}}</h5>
-                            <p class="card-text">{{one_item.description}}</p>
-                            <a href={{one_item.href}} class="btn btn-primary">Item page</a>
-                        </div>
+
+            {% for one_item in items%}
+            <div class="col-sm-4">
+                <div class="card" style="width: 16rem;">
+                    <img class="card-img-top" src={{one_item.image}} alt="No image found">
+                    <div class="card-body">
+                        <h5 class="card-title">{{one_item.name}}</h5>
+                        <p class="card-text">{{one_item.description}}</p>
+                        <a href={{one_item.href}} class="btn btn-primary">Item page</a>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
 
         </div>
     </div>
