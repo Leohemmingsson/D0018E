@@ -26,10 +26,33 @@
         </tr>
         {% for item in items %}
         <tr>
-            <th> {{item.id}} </th>
-            <th> {{item.name}} </th>
-            <th> {{item.quantity}} </th>
-            <th> {{item.price}} </th>
+            <th> 
+                <form onsumbit="edit({{item.id}});console.log({{item.id}})">
+                    <input type="text" name="id" value="{{item.id}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th> 
+                <form onsumbit="edit({{item.name}});console.log({{item.name}})">
+                    <input type="text" name="id" value="{{item.name}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th> 
+                <form onsumbit="edit({{item.quantity}});console.log({{item.quantity}})">
+                    <input type="text" name="id" value="{{item.quantity}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th> 
+                <form onsumbit="edit({{item.price}});console.log({{item.price}})">
+                    <input type="text" name="id" value="{{item.price}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th>
+                <input value="delete" type="button" onclick="del({{item}});console.log({{item}})">
+            </th>
         </tr>
         {% endfor %}
 
