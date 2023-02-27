@@ -146,7 +146,7 @@ def terms_of_service():
 
 @app.route("/item_page")
 def item_page():
-    return render_template("item_page.html")
+    return render_template("item_page.html", item=)
 
 if __name__ == "__main__":
     app.run(debug=True)
