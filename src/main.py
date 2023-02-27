@@ -168,5 +168,13 @@ def terms_of_service():
     return render_template("terms_of_service.html")
 
 
+@app.route("/product/<int:product_number>")
+def item_page(product_number):
+    if g.db.is_product(product_number):
+        item = Item(g.db.get_product_by_id(product_number))
+        return render_template("item_page.html", item=item)
+    return "404: Not found"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
