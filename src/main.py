@@ -154,7 +154,7 @@ def login():
 
 # POST   add a item to the cart
 # DELETE delete a item from the cart
-@app.route("/cart/:item_id", methods=["POST", "DELETE"])
+@app.route("/cart/<int:item_id>", methods=["POST", "DELETE"])
 def cart(item_id):
     if request.method == "POST":
         # The user id (verification cookie) is also the cart id.
@@ -164,7 +164,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.add_to_cart(cart_id, item_id)
-        
+        print(f"user #{cart_id} added item #{item_id} to their cart")
 
     elif request.method == "DELETE":
         cart_id = request.cookies.get("verification")
@@ -173,6 +173,8 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.remove_from_cart(cart_id, item_id)
+
+    return "200"
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():

@@ -74,9 +74,12 @@
                         <hr class="my-0" />
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center pb-2 mb-1">
+                                <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
                                 <a href="/" class="text-dark fw-bold">Cancel</a>
                                 <!-- SEND THAT SHIT TO OUR CART BABYYY WITH THE BUTTON HERE-->
-                                <button type="button" class="btn btn-primary">Buy now</button>
+                                <form action="/cart/{{item.id}}" method="post" target="dummyframe">
+                                    <button type="submit" class="btn btn-primary">Add to cart</button>
+                                </form>
                             </div>
                         </div>
                     </div>
