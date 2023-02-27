@@ -128,15 +128,23 @@ def items():
         return render_template("admin_item.html", items=items)
 
     if request.method == "POST":
-        # Convert the form into a item.
-        # Item() needs the following members in the dictionary:
-        # id, description, name, quantity, price, image
-        item = Item(request.form)
+        if (
+            request.form["description"]
+            and request.form["name"]
+            and request.form["quantity"]
+            and request.form["price"]
+            and request.form["image"]
+        ):
+            g.db.add_product(
+                request.form["description"],
+                request.form["name"],
+                request.form["quantity"],
+                request.form["price"],
+                request.form["image"],
+            )
 
-        g.db.add_product(item)
-
-        # Give a api friendly response.
-        return "200"
+            # Give a api friendly response.
+            return "200"
 
     if request.method == "DELETE":
         id = request.get_json(force=True)["id"]

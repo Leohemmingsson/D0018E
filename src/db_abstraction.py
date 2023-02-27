@@ -85,7 +85,7 @@ class DB:
         return self.cursor.fetchall()
 
     ### TODO METHODS ###
-    def add_product(self, item: Item):
+    def add_product(self, description, name, quantity, price, image):
         # Should recieve a Item and add it to the database
         pass
 
