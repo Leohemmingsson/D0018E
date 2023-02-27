@@ -28,7 +28,7 @@ class DB:
         else:
             if type(sort_by) == str:
                 sort_by = [sort_by]
-            sql = f"SELECT Item.* FROM Item LEFT JOIN TagGroup ON Item.id = TagGroup.item_id WHERE TagGroup.item_id IN (SELECT Tag.id FROM Tag WHERE Tag.value = %s)"
+            sql = f"SELECT Item.* FROM Item LEFT JOIN TagGroup ON Item.id = TagGroup.item_id WHERE TagGroup.tag_id IN (SELECT Tag.id FROM Tag WHERE Tag.value = %s)"
             self.cursor.execute(sql, sort_by)
 
         fetched_products = self.cursor.fetchall()
@@ -43,8 +43,17 @@ class DB:
 
         return fetched_products
 
+    ### STUFF WITH TAGS ###
     def get_tags(self):
         self.cursor.execute("SELECT * FROM Tag")
+        fetched_tags = self.cursor.fetchall()
+
+        return fetched_tags
+
+    def get_tags_for_product(self, product_id):
+        sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
+        val = (product_id,)
+        self.cursor.execute(sql, val)
         fetched_tags = self.cursor.fetchall()
 
         return fetched_tags
@@ -195,7 +204,5 @@ class DB:
 if __name__ == "__main__":
     db = DB()
 
-    cart = db.get_cart(1)
-
-    for x in cart:
-        print(x)
+    tags = db.get_tags_for_product(2)
+    print(tags)
