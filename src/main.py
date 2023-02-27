@@ -163,7 +163,7 @@ def cart(item_id):
             # If there is no verification cookie then we are not logged in.
             return "You are not logged in!"
 
-        g.db.add_item_to_cart(cart_id, item_id)
+        g.db.add_to_cart(cart_id, item_id)
         
 
     elif request.method == "DELETE":
@@ -172,7 +172,7 @@ def cart(item_id):
             # If there is no verification cookie then we are not logged in.
             return "You are not logged in!"
 
-        g.db.delete_item_from_cart(cart_id, item_id)
+        g.db.remove_from_cart(cart_id, item_id)
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
