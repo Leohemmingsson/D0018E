@@ -42,9 +42,9 @@ class DB:
         return fetched_tags
 
     def is_username_password(self, username, password):
-        self.cursor.execute(
-            f"SELECT * FROM User WHERE username = '{username}' and password = '{password}'"
-        )
+        sql = "SELECT * FROM User WHERE username = %s and password = %s"
+        values = (username, password)
+        self.cursor.execute(sql, values)
         user = self.cursor.fetchall()
 
         return user
@@ -63,20 +63,25 @@ class DB:
         self.mydb.commit()
 
     def set_user_type(self, user_id, new_type):
-        self.cursor.execute(f'UPDATE User SET type = "{new_type}" where id = {user_id}')
+        sql = "UPDATE User SET type = %s where id = %s"
+        val = (new_type, user_id)
+
+        self.cursor.execute(sql, val)
         self.mydb.commit()
 
     def delete_user_by_id(self, user_id):
-        self.cursor.execute(f"DELETE FROM User WHERE id = {user_id['id']}")
+        sql = "DELETE FROM User WHERE id = %s"
+        val = (user_id,)
+        self.cursor.execute(sql, val)
         self.mydb.commit()
 
     def is_admin(self, cookie):
         if not cookie:
             return False
 
-        self.cursor.execute(
-            f'SELECT * FROM User WHERE id = {cookie} and type = "admin"'
-        )
+        sql = 'SELECT * FROM User WHERE id = %s and type = "admin"'
+        val = (cookie,)
+        self.cursor.execute(sql, val)
         return len(self.cursor.fetchall()) > 0
 
     def get_users(self):
