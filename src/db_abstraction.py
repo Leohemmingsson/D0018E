@@ -97,11 +97,14 @@ class DB:
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
 
-    def is_product(self, product_id):
-        sql = "SELECT * FROM Item WHERE id = %s"
-        val = (product_id,)
-        self.cursor.execute(sql, val)
-        return len(self.cursor.fetchall()) > 0
+    ### TODO METHODS ###
+    def add_product(self, description, name, quantity, price, image):
+        # Should recieve a Item and add it to the database
+        pass
+
+    def remove_product(self, item_id):
+        # Should remove the item with the specified item_id
+        pass
 
     ### STUFF WITH CART ###
 
