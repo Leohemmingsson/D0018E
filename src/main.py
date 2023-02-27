@@ -197,14 +197,27 @@ def login():
             return render_template("login.html", error="Account not found!")
 
 
-@app.route("/signup")
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    return render_template("signup.html")
+    if request.method == "GET":
+        return render_template("signup.html")
+    elif request.method == "POST":
+        if request.form["password"] == request.form["password2"]:
+            g.db.create_customer(request.form)
+            return "200"
 
 
 @app.route("/terms_of_service")
 def terms_of_service():
     return render_template("terms_of_service.html")
+
+
+@app.route("/product/<int:product_number>")
+def item_page(product_number):
+    if g.db.is_product(product_number):
+        item = Item(g.db.get_product_by_id(product_number))
+        return render_template("item_page.html", item=item)
+    return "404: Not found"
 
 
 if __name__ == "__main__":

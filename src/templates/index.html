@@ -18,52 +18,9 @@
 </head>
 
 <body>
-    <!-- BEGINNING OF NAVBAR-->
     <header>
-        <div class="px-3 py-2 text-bg-dark">
-            <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-end justify-content-end">
-                    <a href="/"
-                        class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
-                        <i class="fa-solid fa-shoe-prints"></i>
-                    </a>
-                    <ul class="nav col-12 col-lg-auto my-2 justify-content-end my-md-0 text-small">
-                        <li>
-                            <a href="/" class="nav-link text-secondary"> <!--- / is home-->
-                                <i class="fa-solid fa-house"></i>
-                                Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/order.html" class="nav-link text-black-50">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                Your Orders
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/user.html" class="nav-link text-black-50">
-                                <i class="fa-solid fa-user"></i>
-                                User
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="px-3 py-2 border-bottom mb-3">
-            <div class="container d-flex flex-wrap justify-content-end">
-                <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search">
-                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-                </form>
-
-                <div class="text-end">
-                    <a href="/login" role="button" class="btn btn-light text-dark me-2">Login</a>
-                    <a href="/signup" role="button" class="btn btn-primary">Sign-up</a>
-                </div>
-            </div>
-        </div>
+        {% include "components/navbar.html" %}
     </header>
-    <!-- BEGINNING OF SIDEBAR-->
     <div class="container-fluid">
         <i class="fa-solid fa-tags"></i>
         <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
@@ -85,8 +42,9 @@
     <div class="container-fluid">
         <!-- Beginning of the first row-->
         <div class="row">
+
             {% for one_item in items%}
-            <div class="col-4">
+            <div class="col-sm-4">
                 <div class="card" style="width: 16rem;">
                     <img class="card-img-top" src={{one_item.image}} alt="No image found">
                     <div class="card-body">
