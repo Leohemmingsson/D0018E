@@ -7,13 +7,13 @@
         <!-- <a href={{one_item.href}} class="btn btn-primary">Item page</a> -->
     </a>
     <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
-    <form id="{{one_item.id}}" action="/cart/{{one_item.id}}" target="dummyframe">
+    <form id="{{one_item.id}}_remove" action="/cart/{{one_item.id}}" target="dummyframe">
         <button type="submit" class="btn btn-primary">Remove</button>
     </form>
 </div>
 
 <script>
-    document.getElementById("{{one_item.id}}").onsubmit = async (e) => {
+    document.getElementById("{{one_item.id}}_remove").onsubmit = async (e) => {
         e.preventDefault();
         let id = "{{one_item.id}}";
 
