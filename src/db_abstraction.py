@@ -109,6 +109,12 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def update_product(self, item_id, description, name, quantity, price, image):
+        sql = "UPDATE Item SET description = %s, name = %s, quantity = %s, price = %s, image = %s WHERE id = %s"
+        val = (description, name, quantity, price, image, item_id)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
     ### STUFF WITH CART ###
     def get_cart(self, user_id):
         cart_id = self.__get_active_cart_id(user_id)
