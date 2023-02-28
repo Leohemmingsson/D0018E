@@ -23,7 +23,6 @@ class DB:
 
     def get_products(self, sort_by: str = None):
         if sort_by == None:
-            print("Is none")
             self.cursor.execute("SELECT * FROM Item")
         else:
             if type(sort_by) == str:
@@ -57,6 +56,34 @@ class DB:
         self.cursor.execute(sql, val)
         fetched_reviews = self.cursor.fetchall()
         return fetched_reviews
+
+    def get_review_score_for_product(self, product_id):
+        sql = "SELECT CAST(AVG(score) AS DECIMAL(2, 1)) FROM Review WHERE item_id = %s"
+        val = (product_id,)
+
+        self.cursor.execute(sql, val)
+        fetched_score = self.cursor.fetchone()
+        return fetched_score
+
+    def is_review(self, user_id, product_id):
+        sql = "SELECT * FROM Review WHERE user_id = %s and item_id = %s"
+        values = (user_id, product_id)
+        self.cursor.execute(sql, values)
+        review = self.cursor.fetchall()
+
+        return bool(len(review))
+
+    def create_review(self, review_info):
+        sql = "INSERT INTO Review (user_id, item_id, score, comment) VALUES (%s, %s, %s, %s)"
+        val = (
+            review_info.user_id,
+            review_info.item_id,
+            review_info.rating,
+            review_info.comment,
+        )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
 
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
@@ -112,6 +139,12 @@ class DB:
     def get_users(self):
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
+
+    def get_username(self, user_id):
+        sql = "SELECT username FROM User WHERE id = %s"
+        val = (user_id,)
+        self.cursor.execute(sql, val)
+        return self.cursor.fetchone()[0]
 
     def is_product(self, product_id):
         sql = "SELECT * FROM Item WHERE id = %s"

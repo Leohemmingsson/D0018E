@@ -54,12 +54,11 @@
                                 <!-- Just loop here and see how many stars should be shown. Always round up :) -->
                                 <div>
                                     <div class="d-flex flex-row justify-content-end mt-1 mb-4 text-danger">
+                                        {% for i in range(item.score|int) %}
                                         <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
+                                        {% endfor %}
                                     </div>
-                                    <p class="small text-muted">Rated 4.0/5</p>
+                                    <p class="small text-muted">Rated {{item.score}}/5</p>
                                 </div>
                             </div>
                         </div>
@@ -85,28 +84,29 @@
         </div>
     </section>
     <!-- THIS IS WHERE WE START WITH THE SHIT  -->
-        <div class="container-fluid">
-            <div class="row">
-                <!-- DO THE FOR LOOP JINJA THINGY HERE -->
-                <div class="col-sm-4">
-                    <div class="card" style="width: 16rem;">
-                        <!-- SRC = one_review.image-->
-                        <img class="card-img-top" src="../static/images/background_chika.png" alt="No image found">
-                        <div class="card-body">
-                            <!-- LOREM IPSUM -> one_review.description-->
-                            <p class="card-text">LOREM IPSUM</p>
-                            <!-- WHO MADE THE REVIEW HERE -> one_review.user -->
-                            <p class="text-muted mb-0">- USER NAME</p>
-                            <!-- HERE IT IS one_review.rating-->
-                            <p class="text-muted mb-0">3/5 rating</p>
-                        </div>
+    <div class="container-fluid">
+        <div class="row">
+            {% for one_review in reviews%}
+            <div class="col-sm-4">
+                <div class="card" style="width: 16rem;">
+                    <!-- SRC = one_review.image-->
+                    <img class="card-img-top" src="../static/images/background_chika.png" alt="No image found">
+                    <div class="card-body">
+                        <!-- LOREM IPSUM -> one_review.description-->
+                        <p class="card-text">{{one_review.comment}}</p>
+                        <!-- WHO MADE THE REVIEW HERE -> one_review.user -->
+                        <p class="text-muted mb-0">- {{one_review.username}}</p>
+                        <!-- HERE IT IS one_review.rating-->
+                        <p class="text-muted mb-0">{{one_review.rating}}/5 rating</p>
                     </div>
                 </div>
-                <!-- END FOR LOOP JINJA HERE -->
-
             </div>
+            {% endfor %}
+
         </div>
+    </div>
     <!-- THIS IS WHERE THE COMMENTS START OwO-->
+    {% if is_review == False %}
     <section style="background-color: #eee;">
         <div class="container my-5 py-5 text-dark">
             <div class="row d-flex justify-content-center">
@@ -117,19 +117,24 @@
                                 <div class="w-100">
                                     <h5>Write your review here</h5>
                                     <div class="form-outline form-white mb-4">
-                                        <textarea class="form-control" id="reviewText" rows="4"
-                                            type="review"></textarea>
-                                        <label class="form-label" form="reviewText"></label>
-                                        <div class="form-outline form-white mb-4">
-                                            <input type="rating" id="typeRating" class="form-control form-control-lg" />
-                                            <label class="form-label" for="typePasswordX">Give product 1-5 in
-                                                rating</label>
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-3">
-                                            <button type="button" type="submit" class="btn btn-success">
-                                                Send <i class="fas fa-long-arrow-alt-right ms-1"></i>
-                                            </button>
-                                        </div>
+
+                                        <form action="" method="post">
+                                            <textarea class="form-control" name="review_text" rows="4"
+                                                type="review"></textarea>
+                                            <label class="form-label" form="review_text"></label>
+                                            <div class="form-outline form-white mb-4">
+                                                <input type="number" min="0" , max="5" name="review_score"
+                                                    class="form-control form-control-lg" />
+                                                <label class="form-label">Give product 1-5 in
+                                                    rating</label>
+                                            </div>
+                                            <div class=" d-flex justify-content-end mt-3">
+                                                <button type="submit" class="btn btn-success">
+                                                    Send <i class="fas fa-long-arrow-alt-right ms-1"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+
                                     </div>
                                 </div>
                             </div>
@@ -139,6 +144,7 @@
             </div>
         </div>
     </section>
+    {% endif %}
     <!-- THIS IS END OF COMMENTS-->
 </body>
 
