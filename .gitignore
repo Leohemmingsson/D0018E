@@ -135,3 +135,6 @@ justfile
 
 # LEO STUFF
 test.py
+
+# CARL VSCODE
+.vscode
