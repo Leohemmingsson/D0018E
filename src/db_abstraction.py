@@ -98,7 +98,7 @@ class DB:
         return self.cursor.fetchall()
 
     def add_product(self, description, name, quantity, price, image):
-        sql = "INSERT INTO Item (description, name, quantity, price, image) VALUES (%s, %s, %s, %s, %s)"
+        sql = "INSERT INTO Item (description, name, in_stock, price, img) VALUES (%s, %s, %s, %s, %s)"
         val = (description, name, quantity, price, image)
         self.cursor.execute(sql, val)
         self.mydb.commit()
