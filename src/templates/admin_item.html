@@ -27,13 +27,10 @@
         {% for item in items %}
         <tr>
             <th> 
-                <form onsumbit="edit({{item.id}});console.log({{item.id}})">
-                    <input type="text" name="id" value="{{item.id}}">
-                    <input type="submit" value="edit">
-                </form>
+                {{item.id}}
             </th>
             <th> 
-                <form onsumbit="edit({{item.name}});console.log({{item.name}})">
+                <form onsumbit="edit({{item.id}}, {{item.name}});console.log({{item.name}})">
                     <input type="text" name="id" value="{{item.name}}">
                     <input type="submit" value="edit">
                 </form>
@@ -95,6 +92,39 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function edit_name(item_id, attribute) {
+            fetch('/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({ "item_id": item_id, "name": attribute })
+            }).then(() => window.location.reload());
+        }
+
+        function edit_quantity(item_id, attribute) {
+            fetch('/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({ "item_id": item_id, "quantity": attribute })
+            }).then(() => window.location.reload());
+            
+        }
+
+        function edit_price(item_id, attribute) {
+            fetch('/admin/users', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({ "item_id": item_id, "price": attribute })
+            }).then(() => window.location.reload());
+        }
+    </script>
 </body>
 
 </html>

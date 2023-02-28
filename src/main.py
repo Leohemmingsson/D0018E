@@ -118,6 +118,7 @@ def admin_users():
         "GET",
         "POST",
         "DELETE",
+        "PATCH"
     ],
 )
 def items():
@@ -154,6 +155,9 @@ def items():
             g.db.remove_product(id)
 
             return "200"
+
+    if request.method == "PATCH":
+        pass
 
 
 @app.route("/login", methods=["GET", "POST"])
