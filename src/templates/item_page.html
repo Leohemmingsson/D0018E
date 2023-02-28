@@ -84,7 +84,28 @@
             </div>
         </div>
     </section>
+    <!-- THIS IS WHERE WE START WITH THE SHIT  -->
+        <div class="container-fluid">
+            <div class="row">
+                <!-- DO THE FOR LOOP JINJA THINGY HERE -->
+                <div class="col-sm-4">
+                    <div class="card" style="width: 16rem;">
+                        <!-- SRC = one_review.image-->
+                        <img class="card-img-top" src="../static/images/background_chika.png" alt="No image found">
+                        <div class="card-body">
+                            <!-- LOREM IPSUM -> one_review.description-->
+                            <p class="card-text">LOREM IPSUM</p>
+                            <!-- WHO MADE THE REVIEW HERE -> one_review.user -->
+                            <p class="text-muted mb-0">- USER NAME</p>
+                            <!-- HERE IT IS one_review.rating-->
+                            <p class="text-muted mb-0">3/5 rating</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- END FOR LOOP JINJA HERE -->
 
+            </div>
+        </div>
     <!-- THIS IS WHERE THE COMMENTS START OwO-->
     <section style="background-color: #eee;">
         <div class="container my-5 py-5 text-dark">
