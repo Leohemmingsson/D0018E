@@ -1,10 +1,32 @@
 <!-- Sidebar -->
-{% for one_item in items%}
+{% for one_item in items_in_basket%}
 <div class="card" style="width: 10rem;">
     <img class="card-img-top" src={{one_item.image}} alt="No image found">
-    <div class="card-body">
-        <h5 class="card-title">{{one_item.name}}</h5>
-        <a href={{one_item.href}} class="btn btn-primary">Item page</a>
-    </div>
+    <a href={{one_item.href}}>
+        <h5 class="card-title">{{one_item.name}} x {{one_item.quantity}}</h5>
+        <!-- <a href={{one_item.href}} class="btn btn-primary">Item page</a> -->
+    </a>
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+    <form id="{{one_item.id}}" action="/cart/{{one_item.id}}" target="dummyframe">
+        <button type="submit" class="btn btn-primary">Remove</button>
+    </form>
 </div>
+
+<script>
+    document.getElementById("{{one_item.id}}").onsubmit = async (e) => {
+        e.preventDefault();
+        let id = "{{one_item.id}}";
+
+        fetch("/cart/" + id,
+            {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: "DELETE",
+            }
+        ).then(() => window.location.reload());
+    }
+</script>
 {% endfor %}
+
+<!--  -->
