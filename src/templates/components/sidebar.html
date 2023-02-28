@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-{% for one_item in items %}
+{% for one_item in items_in_basket%}
 <div class="card" style="width: 10rem;">
     <img class="card-img-top" src={{one_item.image}} alt="No image found">
     <div class="card-body">
@@ -13,16 +13,16 @@
 </div>
 
 <script>
-    document.getElementById("{{one_item.id}}").onsubmit = async(e) => {
+    document.getElementById("{{one_item.id}}").onsubmit = async (e) => {
         e.preventDefault();
         let id = "{{one_item.id}}";
 
-        fetch("/cart/"+id, 
+        fetch("/cart/" + id,
             {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
-                method: "DELETE", 
+                method: "DELETE",
             }
         ).then(() => window.location.reload());
     }

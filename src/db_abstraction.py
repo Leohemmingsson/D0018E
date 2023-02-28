@@ -23,7 +23,6 @@ class DB:
 
     def get_products(self, sort_by: str = None):
         if sort_by == None:
-            print("Is none")
             self.cursor.execute("SELECT * FROM Item")
         else:
             if type(sort_by) == str:
@@ -59,6 +58,7 @@ class DB:
 
     def get_cart(self, id):
         pass
+
     def create_customer(self, user_info):
         sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
         val = (
