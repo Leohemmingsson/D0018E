@@ -31,38 +31,24 @@
                 {{item.id}}
             </th>
             <th> 
-                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
-                <button onclick="edit({{item.id}}, 'name', {{item}})"></button>
+                <input type="text" id="{{item.id}}-name" value="{{item.name}}">
+                <button onclick="edit('name', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
-                <input type="text" name="{{item.id}}-quantity" value="{{item.quantity}}">
-                <button onclick="edit({{item.id}}, 'quantity')"></button>
+                <input type="text" id="{{item.id}}-quantity" value="{{item.quantity}}">
+                <button onclick="edit('quantity', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
-                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
-                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
-                <form onsumbit="edit({{item.id}}, {{item.price}}, 'price')">
-                    <input type="text" name="id" value="{{item.price}}">
-                    <input type="submit" value="edit">
-                </form>
+                <input type="text" id="{{item.id}}-price" value="{{item.price}}">
+                <button onclick="edit('price', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
-                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
-                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
-
-                <form onsumbit="edit({{item.id}}, {{item.description}}, 'description')">
-                    <input type="text" name="id" value="{{item.description}}">
-                    <input type="submit" value="edit">
-                </form>
+                <input type="text" id="{{item.id}}-description" value="{{item.description}}">
+                <button onclick="edit('description', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
-                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
-                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
-
-                <form onsumbit="edit({{item.id}}, {{item.image}}, 'image')">
-                    <input type="text" name="id" value="{{item.image}}">
-                    <input type="submit" value="edit">
-                </form>
+                <input type="text" id="{{item.id}}-image" value="{{item.image}}">
+                <button onclick="edit('name', {{item.to_json()}})"> edit </button>
             </th>
             <th>
                 <input value="delete" type="button" onclick="del({{item.id}})">
@@ -110,15 +96,17 @@
         </div>
     </div>
     <script>
-        function edit(item_id, attribute, item) {
-            console.log("http://" + window.location.host + '/admin/items')
-            console.log
+        function edit(attribute, item) {
+            let new_attribute_value = document.getElementById(item.id + "-" + attribute).value;
+            let new_item = item;
+            new_item[attribute] = new_attribute_value;
+
             fetch("http://" + window.location.host + '/admin/items', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'PATCH',
-                body: JSON.stringify({ "item_id": item_id, name: attribute })
+                body: JSON.stringify(new_item)
             }).then(() => window.location.reload());
         }
 

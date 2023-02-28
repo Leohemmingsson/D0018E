@@ -115,12 +115,7 @@ def admin_users():
 
 @app.route(
     "/admin/items",
-    methods=[
-        "GET",
-        "POST",
-        "DELETE",
-        "PATCH"
-    ],
+    methods=["GET", "POST", "DELETE", "PATCH"],
 )
 def items():
     if request.method == "GET":
@@ -159,14 +154,18 @@ def items():
             return "200"
 
     if request.method == "PATCH":
-        json = request.get_json(force=True)
-        item = g.db.get_product_by_id(json["item_id"])
-        print("why")
+        item = request.get_json(force=True)
 
-        for (key, value) in json:
-            print(key, value)
+        g.db.update_product(
+            item["id"],
+            item["description"],
+            item["name"],
+            item["quantity"],
+            item["price"],
+            item["image"],
+        )
 
-        pass
+        return "200"
 
 
 @app.route("/login", methods=["GET", "POST"])

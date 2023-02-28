@@ -42,4 +42,14 @@ class Item:
             self.summary = self.description
 
     def to_json(self):
-        return json.dumps(self.__dict__)
+        return json.dumps({
+        "id" : self.id,
+        "description" : self.description,
+        "summary" : self.summary,
+        "name" : self.name,
+        "score" : self.score,
+        "quantity" : self.quantity,
+        "price" : self.price,
+        "image" : self.image,
+        "href" : self.href,
+        })
