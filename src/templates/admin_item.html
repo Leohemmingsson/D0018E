@@ -30,19 +30,19 @@
                 {{item.id}}
             </th>
             <th> 
-                <form onsumbit="edit({{item.id}}, {{item.name}});console.log({{item.name}})">
+                <form onsumbit="edit({{item.id}}, {{item.name}}, 'name');console.log({{item.name}})">
                     <input type="text" name="id" value="{{item.name}}">
                     <input type="submit" value="edit">
                 </form>
             </th>
             <th> 
-                <form onsumbit="edit({{item.quantity}});console.log({{item.quantity}})">
+                <form onsumbit="edit({{item.id}}, {{item.quantity}}, 'quantity');console.log({{item.quantity}})">
                     <input type="text" name="id" value="{{item.quantity}}">
                     <input type="submit" value="edit">
                 </form>
             </th>
             <th> 
-                <form onsumbit="edit({{item.price}});console.log({{item.price}})">
+                <form onsumbit="edit({{item.id}}, {{item.price}}, 'price');console.log({{item.price}})">
                     <input type="text" name="id" value="{{item.price}}">
                     <input type="submit" value="edit">
                 </form>
@@ -94,34 +94,13 @@
     </div>
 
     <script>
-        function edit_name(item_id, attribute) {
+        function edit(item_id, attribute, name) {
             fetch('/admin/users', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'PATCH',
-                body: JSON.stringify({ "item_id": item_id, "name": attribute })
-            }).then(() => window.location.reload());
-        }
-
-        function edit_quantity(item_id, attribute) {
-            fetch('/admin/users', {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                method: 'PATCH',
-                body: JSON.stringify({ "item_id": item_id, "quantity": attribute })
-            }).then(() => window.location.reload());
-            
-        }
-
-        function edit_price(item_id, attribute) {
-            fetch('/admin/users', {
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                method: 'PATCH',
-                body: JSON.stringify({ "item_id": item_id, "price": attribute })
+                body: JSON.stringify({ "item_id": item_id, name: attribute })
             }).then(() => window.location.reload());
         }
     </script>
