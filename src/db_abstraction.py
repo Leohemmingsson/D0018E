@@ -159,9 +159,10 @@ class DB:
 
     def get_cart(self, user_id):
         cart_id = self.__get_active_cart_id(user_id)
-        sql = "SELECT Item.*, ItemGroup.quantity FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
+        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, Item.price, Item.img, ItemGroup.quantity FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
         val = (cart_id,)
         self.cursor.execute(sql, val)
+        # print(self.cursor.fetchall())
         return self.cursor.fetchall()
 
     def add_to_cart(self, user_id, item_id):
