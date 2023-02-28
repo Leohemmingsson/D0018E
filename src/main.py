@@ -70,18 +70,22 @@ def admin():
 
     users = g.db.get_users()
 
-    return render_template("admin.html", users=enumerate(users))
+    return render_template("admin_index.html", users=enumerate(users))
 
 
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
 # POST to add a user, PATCH to update a users permissions, DELETE to delete.
-@app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
+@app.route("/admin/users", methods=["POST", "PATCH", "DELETE", "GET"])
 @cross_origin()
 def admin_users():
     req_cookies = request.cookies.get("verification")
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
+
+    if request.method == "GET":
+        users = g.db.get_users()
+        return render_template("admin_users.html", users=enumerate(users))
 
     if request.method == "POST":
         json = request.get_json(force=True)
