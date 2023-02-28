@@ -22,6 +22,8 @@
             <th>item name</th>
             <th>n in stock</th>
             <th>price</th>
+            <th>description</th>
+            <th>img url</th>
         </tr>
         {% for item in items %}
         <tr>
@@ -29,20 +31,36 @@
                 {{item.id}}
             </th>
             <th> 
-                <form onsumbit="edit({{item.id}}, {{item.name}}, 'name');console.log({{item.name}})">
-                    <input type="text" name="id" value="{{item.name}}">
-                    <input type="submit" value="edit">
-                </form>
+                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
+                <button onclick="edit({{item.id}}, 'name', {{item}})"></button>
             </th>
             <th> 
-                <form onsumbit="edit({{item.id}}, {{item.quantity}}, 'quantity');console.log({{item.quantity}})">
-                    <input type="text" name="id" value="{{item.quantity}}">
-                    <input type="submit" value="edit">
-                </form>
+                <input type="text" name="{{item.id}}-quantity" value="{{item.quantity}}">
+                <button onclick="edit({{item.id}}, 'quantity')"></button>
             </th>
             <th> 
-                <form onsumbit="edit({{item.id}}, {{item.price}}, 'price');console.log({{item.price}})">
+                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
+                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
+                <form onsumbit="edit({{item.id}}, {{item.price}}, 'price')">
                     <input type="text" name="id" value="{{item.price}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th> 
+                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
+                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
+
+                <form onsumbit="edit({{item.id}}, {{item.description}}, 'description')">
+                    <input type="text" name="id" value="{{item.description}}">
+                    <input type="submit" value="edit">
+                </form>
+            </th>
+            <th> 
+                <input type="text" name="{{item.id}}-name" value="{{item.name}}">
+                <button onclick="edit({{item.id}}, '{{item.name}}', 'name')"></button>
+
+                <form onsumbit="edit({{item.id}}, {{item.image}}, 'image')">
+                    <input type="text" name="id" value="{{item.image}}">
                     <input type="submit" value="edit">
                 </form>
             </th>
@@ -91,10 +109,11 @@
             </div>
         </div>
     </div>
-
     <script>
-        function edit(item_id, attribute, name) {
-            fetch('/admin/items', {
+        function edit(item_id, attribute, item) {
+            console.log("http://" + window.location.host + '/admin/items')
+            console.log
+            fetch("http://" + window.location.host + '/admin/items', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
@@ -113,6 +132,7 @@
             }).then(() => window.location.reload());
         }
     </script>
+
 </body>
 
 </html>

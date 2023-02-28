@@ -1,3 +1,5 @@
+import json 
+
 class Item:
     __slots__ = [
         "id",
@@ -38,3 +40,6 @@ class Item:
             self.summary = self.description[:50] + "..."
         else:
             self.summary = self.description
+
+    def to_json(self):
+        return json.dumps(self.__dict__)

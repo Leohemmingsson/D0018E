@@ -159,6 +159,13 @@ def items():
             return "200"
 
     if request.method == "PATCH":
+        json = request.get_json(force=True)
+        item = g.db.get_product_by_id(json["item_id"])
+        print("why")
+
+        for (key, value) in json:
+            print(key, value)
+
         pass
 
 
