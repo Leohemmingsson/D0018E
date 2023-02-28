@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 from item import Item
+from reviews import Reviews
 import jsonschema
 from jsonschema.exceptions import ValidationError
 from schemas import user_schema
@@ -172,7 +173,10 @@ def terms_of_service():
 def item_page(product_number):
     if g.db.is_product(product_number):
         item = Item(g.db.get_product_by_id(product_number))
-        return render_template("item_page.html", item=item)
+        fetched_reviews = g.db.get_reviews_for_product(product_number)
+        print(fetched_reviews)
+        reviews = [Reviews(review) for review in fetched_reviews]
+        return render_template("item_page.html", item=item, reviews=reviews)
     return "404: Not found"
 
 

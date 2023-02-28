@@ -50,6 +50,14 @@ class DB:
 
         return fetched_tags
 
+    ### STUFF WITH REVIEWS ###
+    def get_reviews_for_product(self, product_id):
+        sql = "SELECT * FROM Review WHERE item_id = %s"
+        val = (product_id,)
+        self.cursor.execute(sql, val)
+        fetched_reviews = self.cursor.fetchall()
+        return fetched_reviews
+
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
         val = (product_id,)
