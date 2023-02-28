@@ -16,3 +16,8 @@ class Item:
             self.price = kwargs["price"]
             self.image = kwargs["image"]
             self.href = f"/product/{kwargs['id']}"
+
+        if len(self.description) > 50:
+            self.summary = self.description[:50] + "..."
+        else:
+            self.summary = self.description

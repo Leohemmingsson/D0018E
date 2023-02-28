@@ -172,6 +172,7 @@ def terms_of_service():
 def item_page(product_number):
     if g.db.is_product(product_number):
         item = Item(g.db.get_product_by_id(product_number))
+        print(item.summary)
         return render_template("item_page.html", item=item)
     return "404: Not found"
 
