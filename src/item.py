@@ -2,6 +2,7 @@ class Item:
     __slots__ = [
         "id",
         "description",
+        "summary",
         "name",
         "score",
         "quantity",
