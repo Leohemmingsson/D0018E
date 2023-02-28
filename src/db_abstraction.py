@@ -97,17 +97,19 @@ class DB:
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
 
-    ### TODO METHODS ###
     def add_product(self, description, name, quantity, price, image):
-        # Should recieve a Item and add it to the database
-        pass
+        sql = "INSERT INTO Item (description, name, quantity, price, image) VALUES (%s, %s, %s, %s, %s)"
+        val = (description, name, quantity, price, image)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
 
     def remove_product(self, item_id):
-        # Should remove the item with the specified item_id
-        pass
+        sql = "DELETE FROM Item WHERE id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
 
     ### STUFF WITH CART ###
-
     def get_cart(self, user_id):
         cart_id = self.__get_active_cart_id(user_id)
         sql = "SELECT Item.*, ItemGroup.quantity FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
