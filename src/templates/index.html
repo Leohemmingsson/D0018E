@@ -42,21 +42,25 @@
     <div class="container-fluid">
         <!-- Beginning of the first row-->
         <div class="row">
-
-            {% for one_item in items%}
-            <div class="col-sm-4">
-                <div class="card" style="width: 16rem;">
-                    <img class="card-img-top" src={{one_item.image}} alt="No image found">
-                    <div class="card-body">
-                        <h5 class="card-title">{{one_item.name}}</h5>
-                        <p class="card-text">{{one_item.summary}}</p>
-                        <a href={{one_item.href}} class="btn btn-primary btn-sm">Item page</a>
-                        <a href="link-to-basket" class="btn btn-success btn-sm">Add to basket</a>
+            <div class="col-8">
+                <div class="row">
+                    {% for one_item in items%}
+                    <div class="card" style="width: 16rem;">
+                        <img class="card-img-top" src={{one_item.image}} alt="No image found">
+                        <div class="card-body">
+                            <h5 class="card-title">{{one_item.name}}</h5>
+                            <p class="card-text">{{one_item.summary}}</p>
+                            <a href={{one_item.href}} class="btn btn-primary btn-sm">Item page</a>
+                            <a href="link-to-basket" class="btn btn-success btn-sm">Add to basket</a>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
-
+            <div class="col-4">
+                <button type="button" class="btn btn-success">PLACE ORDER</button>
+                {% include "components/sidebar.html" %}
+            </div>
         </div>
     </div>
 </body>

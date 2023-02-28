@@ -50,10 +50,18 @@ def index():
 
     tags = [{"name": name, "href": f"/?sortby={name}"} for (_, name) in fetched_tags]
 
+    verification_cookie: str = request.cookies.get("verification")
+    if verification_cookie:
+        products_in_basket = g.db.get_cart(verification_cookie)
+        items_in_basket = [Item(product) for product in products_in_basket]
+    else:
+        items_in_basket = []
+
     return render_template(
         "index.html",
         items=items,
         tags=tags,
+        items_in_basket=items_in_basket,
     )
 
 
@@ -156,6 +164,32 @@ def login():
             # Invalid login! Return a error and log the event.
             log.log(f"Someone tried to log in as {username} with password {password}")
             return render_template("login.html", error="Account not found!")
+
+
+# POST   add a item to the cart
+# DELETE delete a item from the cart
+@app.route("/cart/<int:item_id>", methods=["POST", "DELETE"])
+def cart(item_id):
+    if request.method == "POST":
+        # The user id (verification cookie) is also the cart id.
+        cart_id = request.cookies.get("verification")
+        if not cart_id:
+            # If there is no verification cookie then we are not logged in.
+            return "You are not logged in!"
+
+        g.db.add_to_cart(cart_id, item_id)
+        print(f"user #{cart_id} added item #{item_id} to their cart")
+
+    elif request.method == "DELETE":
+        cart_id = request.cookies.get("verification")
+        if not cart_id:
+            # If there is no verification cookie then we are not logged in.
+            return "You are not logged in!"
+
+        g.db.remove_from_cart(cart_id, item_id)
+        print(f"Removing item #{item_id} from cart #{cart_id}")
+
+    return "200"
 
 
 @app.route("/signup", methods=["GET", "POST"])
