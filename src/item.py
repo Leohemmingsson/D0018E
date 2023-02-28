@@ -32,3 +32,8 @@ class Item:
             self.score = db.get_review_score_for_product(self.id)[0]
         else:
             self.score = None
+
+        if len(self.description) > 50:
+            self.summary = self.description[:50] + "..."
+        else:
+            self.summary = self.description
