@@ -149,11 +149,12 @@ def items():
             return "200"
 
     if request.method == "DELETE":
-        id = request.get_json(force=True)["id"]
+        id = request.get_json(force=True)["item_id"]
 
         # None check
         if id:
             g.db.remove_product(id)
+            print("Removed item with id: {id}")
 
             return "200"
 

@@ -1,5 +1,4 @@
-<html>
-
+<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -48,7 +47,7 @@
                 </form>
             </th>
             <th>
-                <input value="delete" type="button" onclick="del({{item}});console.log({{item}})">
+                <input value="delete" type="button" onclick="del({{item.id}})">
             </th>
         </tr>
         {% endfor %}
@@ -95,12 +94,22 @@
 
     <script>
         function edit(item_id, attribute, name) {
-            fetch('/admin/users', {
+            fetch('/admin/items', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'PATCH',
                 body: JSON.stringify({ "item_id": item_id, name: attribute })
+            }).then(() => window.location.reload());
+        }
+
+        function del(item_id) {
+            fetch('/admin/items', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({ "item_id": item_id })
             }).then(() => window.location.reload());
         }
     </script>
