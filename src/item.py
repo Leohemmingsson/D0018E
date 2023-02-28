@@ -1,5 +1,17 @@
 class Item:
-    def __init__(self, product=None, **kwargs):
+    __slots__ = [
+        "id",
+        "description",
+        "summary",
+        "name",
+        "score",
+        "quantity",
+        "price",
+        "image",
+        "href",
+    ]
+
+    def __init__(self, product=None, db=None, **kwargs):
         if len(kwargs) == 0:
             self.id = product[0]
             self.description = product[2]
@@ -16,3 +28,13 @@ class Item:
             self.price = kwargs["price"]
             self.image = kwargs["image"]
             self.href = f"/product/{kwargs['id']}"
+
+        if db:
+            self.score = db.get_review_score_for_product(self.id)[0]
+        else:
+            self.score = None
+
+        if len(self.description) > 50:
+            self.summary = self.description[:50] + "..."
+        else:
+            self.summary = self.description

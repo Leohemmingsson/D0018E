@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 from item import Item
+from review import Review
 import jsonschema
 from jsonschema.exceptions import ValidationError
 from schemas import user_schema
@@ -78,18 +79,22 @@ def admin():
 
     users = g.db.get_users()
 
-    return render_template("admin.html", users=enumerate(users))
+    return render_template("admin_index.html", users=enumerate(users))
 
 
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
 # POST to add a user, PATCH to update a users permissions, DELETE to delete.
-@app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
+@app.route("/admin/users", methods=["POST", "PATCH", "DELETE", "GET"])
 @cross_origin()
 def admin_users():
     req_cookies = request.cookies.get("verification")
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
+
+    if request.method == "GET":
+        users = g.db.get_users()
+        return render_template("admin_users.html", users=enumerate(users))
 
     if request.method == "POST":
         json = request.get_json(force=True)
@@ -202,11 +207,30 @@ def terms_of_service():
     return render_template("terms_of_service.html")
 
 
-@app.route("/product/<int:product_number>")
+@app.route("/product/<int:product_number>", methods=["GET", "POST"])
 def item_page(product_number):
+    if request.method == "POST":
+        review_score = request.form["review_score"]
+        review_text = request.form["review_text"]
+        review = Review(
+            [
+                None,
+                request.cookies.get("verification"),
+                product_number,
+                review_score,
+                review_text,
+            ]
+        )
+        g.db.create_review(review)
+
     if g.db.is_product(product_number):
-        item = Item(g.db.get_product_by_id(product_number))
-        return render_template("item_page.html", item=item)
+        item = Item(g.db.get_product_by_id(product_number), g.db)
+        fetched_reviews = g.db.get_reviews_for_product(product_number)
+        reviews = [Review(review, g.db) for review in fetched_reviews]
+        is_review = g.db.is_review(request.cookies.get("verification"), product_number)
+        return render_template(
+            "item_page.html", item=item, reviews=reviews, is_review=is_review
+        )
     return "404: Not found"
 
 
