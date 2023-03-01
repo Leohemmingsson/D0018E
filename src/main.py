@@ -1,4 +1,13 @@
-from flask import Flask, render_template, request, make_response, g, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    make_response,
+    g,
+    redirect,
+    url_for,
+    send_from_directory,
+)
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
@@ -154,6 +163,61 @@ def admin_users():
     return "200"
 
 
+@app.route(
+    "/admin/items",
+    methods=["GET", "POST", "DELETE", "PATCH"],
+)
+def items():
+    if request.method == "GET":
+        items = g.db.get_products()
+        items = [Item(product) for product in items]
+
+        return render_template("admin_item.html", items=items)
+
+    if request.method == "POST":
+        if (
+            request.form["description"]
+            and request.form["name"]
+            and request.form["quantity"]
+            and request.form["price"]
+            and request.form["image"]
+        ):
+            g.db.add_product(
+                request.form["description"],
+                request.form["name"],
+                request.form["quantity"],
+                request.form["price"],
+                request.form["image"],
+            )
+
+            # Give a api friendly response.
+            return "200"
+
+    if request.method == "DELETE":
+        id = request.get_json(force=True)["item_id"]
+
+        # None check
+        if id:
+            g.db.remove_product(id)
+            print("Removed item with id: {id}")
+
+            return "200"
+
+    if request.method == "PATCH":
+        item = request.get_json(force=True)
+
+        g.db.update_product(
+            item["id"],
+            item["description"],
+            item["name"],
+            item["quantity"],
+            item["price"],
+            item["image"],
+        )
+
+        return "200"
+
+
 @app.route("/login", methods=["GET", "POST"])
 @cross_origin()
 def login():
@@ -261,6 +325,15 @@ def item_page(product_number):
             "item_page.html", item=item, reviews=reviews, is_review=is_review
         )
     return "404: Not found"
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 
 
 if __name__ == "__main__":

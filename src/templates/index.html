@@ -17,6 +17,13 @@
     <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
 </head>
 
+<script type="text/javascript">
+    function update(id) {
+        window.location.reload();
+    }
+
+</script>
+
 <body>
     <header>
         {% include "components/navbar.html" %}
@@ -50,14 +57,35 @@
                         <div class="card-body">
                             <h5 class="card-title">{{one_item.name}}</h5>
                             <p class="card-text">{{one_item.summary}}</p>
-                            <a href={{one_item.href}} class="btn btn-primary">Item page</a>
+
+                            <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+                            <form id="{{one_item.id}}_add" action="/cart/{{one_item.id}}" target="dummyframe">
+                                <a href={{one_item.href}} class="btn btn-primary btn-sm">Item page</a>
+                                <button type="submit" class="btn btn-success btn-sm">Add to basket</button>
+                            </form>
+
+                            <script>
+                                document.getElementById("{{one_item.id}}_add").onsubmit = async (e) => {
+                                    e.preventDefault();
+                                    let id = "{{one_item.id}}";
+
+                                    fetch("/cart/" + id,
+                                        {
+                                            headers: {
+                                                'Access-Control-Allow-Origin': '*'
+                                            },
+                                            method: "POST",
+                                        }
+                                    ).then(() => window.location.reload());
+                                }
+                            </script>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
-           <div class="col-4">
-                <button type="button" class="btn btn-success" >PLACE ORDER</button>
+            <div class="col-4">
+                <button type="button" class="btn btn-success">PLACE ORDER</button>
                 {% include "components/sidebar.html" %}
             </div>
         </div>
