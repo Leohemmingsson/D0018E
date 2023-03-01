@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
@@ -22,35 +23,31 @@
     <table>
         <tr>
             <th>id</th>
-            <th>item name</th>
-            <th>n in stock</th>
-            <th>price</th>
-            <th>description</th>
-            <th>img url</th>
+            <th>user_id</th>
+            <th>item_id</th>
+            <th>rating</th>
+            <th>comment</th>
         </tr>
-        {% for item in items %}
+        {% for review in reviews %}
         <tr>
             <th> 
-                {{item.id}}
+                {{review.id}}
             </th>
             <th> 
-                <input type="text" id="{{item.id}}-name" value="{{item.name}}">
+                <input type="text" id="{{review.id}}-user_id" value="{{review.user_id}}">
             </th>
             <th> 
-                <input type="text" id="{{item.id}}-quantity" value="{{item.quantity}}">
+                <input type="text" id="{{review.id}}-item_id" value="{{review.item_id}}">
             </th>
             <th> 
-                <input type="text" id="{{item.id}}-price" value="{{item.price}}">
+                <input type="text" id="{{review.id}}-rating" value="{{review.rating}}">
             </th>
             <th> 
-                <input type="text" id="{{item.id}}-description" value="{{item.description}}">
-            </th>
-            <th> 
-                <input type="text" id="{{item.id}}-image" value="{{item.image}}">
+                <input type="text" id="{{review.id}}-comment" value="{{review.comment}}">
             </th>
             <th>
-                <button onclick="edit({{item.to_json()}})"> update </button>
-                <input value="delete" type="button" onclick="del({{item.id}})">
+                <button onclick="edit({{review.to_json()}})">update</button>
+                <input value="delete" type="button" onclick="del('{{review.id}}')">
             </th>
         </tr>
         {% endfor %}
@@ -76,18 +73,15 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" id="add-item-form" target="dummyframe" method="post">
-                        <lable for="name">Name</lable>
-                        <input name="name" type="text" class="form-control" id="name"></input>
-                        <label for="description">Description</label>
-                        <input name="description" type="text" class="form-control" id="description"></input>
-                        <label for="quantity">Quantity</label>
-                        <input name="quantity" type="text" class="form-control" id="quantity"></input>
-                        <label for="price">Price</label>
-                        <input name="price" type="text" class="form-control" id="price"></input>
-                        <label for="image">Image link</label>
-                        <input name="image" type="text" class="form-control" id="image"></input>
-
+                    <form action="" id="add-review-form" target="dummyframe" method="post">
+                        <lable for="user_id">user_id</lable>
+                        <input value="user_id" type="text" class="form-control" id="user_id"></input>
+                        <lable for="item_id">item_id</lable>
+                        <input value="item_id" type="text" class="form-control" id="item_id"></input>
+                        <lable for="rating">rating</lable>
+                        <input value="rating" type="text" class="form-control" id="rating"></input>
+                        <lable for="comment">comment</lable>
+                        <input value="comment" type="text" class="form-control" id="comment"></input>
                         <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
                     </form>
                 </div>
@@ -95,40 +89,51 @@
         </div>
     </div>
     <script>
-        function edit(item) {
-            let new_name = document.getElementById(item.id + "-name").value;
-            let new_quantity = document.getElementById(item.id + "-quantity").value;
-            let new_price = document.getElementById(item.id + "-price").value;
-            let new_description = document.getElementById(item.id + "-description").value;
-            let new_image = document.getElementById(item.id + "-image").value;
-
-            fetch("http://" + window.location.host + '/admin/items', {
+        function edit(review) {
+            fetch("http://" + window.location.host + '/admin/reviews', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'PATCH',
-                body: JSON.stringify({
-                    "id" : item.id,
-                    "name" : new_name,
-                    "description" : new_description,
-                    "price" : new_price,
-                    "quantity" : new_quantity,
-                    "image" : new_image,
-                })
+                body: JSON.stringify(review)
             }).then(() => window.location.reload());
         }
 
-        function del(item_id) {
-            fetch('/admin/items', {
+        function del(review_id) {
+            fetch("http://" + window.location.host + '/admin/reviews', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'DELETE',
-                body: JSON.stringify({ "item_id": item_id })
+                body: JSON.stringify({
+                    "review_id" : review_id
+                })
             }).then(() => window.location.reload());
         }
+
+        document.getElementById("add-review-form").onsubmit = async(e) => {
+            e.preventDefault();
+
+            let user_id = document.getElementById("user_id").value;
+            let item_id = document.getElementById("item_id").value;
+            let rating = document.getElementById("rating").value;
+            let comment = document.getElementById("comment").value;
+
+            fetch("/admin/reviews", 
+                {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        "Content-Type": "application/json"
+                    },
+                    method: "POST", 
+                    body: JSON.stringify({
+                        "user_id" : user_id,
+                        "item_id" : item_id,
+                        "rating" : rating,
+                        "comment" : comment
+                    })
+                }
+            ).then(() => window.location.reload());
+        }
     </script>
-
 </body>
-
-</html>

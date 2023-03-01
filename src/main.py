@@ -97,6 +97,77 @@ def admin():
     return render_template("admin_index.html", users=enumerate(users))
 
 
+@app.route("/admin/reviews", methods=["GET", "POST", "PATCH", "DELETE"])
+@cross_origin()
+def admin_reviews():
+    # Only give access to this page if the cookie matches a admin
+    verification_cookie: str = request.cookies.get("verification")
+
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
+
+    if request.method == "GET":
+        products = g.db.get_products()
+        reviews = [g.db.get_reviews_for_product(p[0]) for p in products]
+        reviews = [Review(item) for sublist in reviews for item in sublist]
+        return render_template("admin_review.html", reviews=reviews)
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        review = (
+            None,
+            json["user_id"],
+            json["item_id"],
+            json["rating"],
+            json["comment"],
+        )
+        g.db.create_review(Review(review))
+
+        return "200"
+
+    if request.method == "PATCH":
+        json = request.get_json(force=True)
+        print(json)
+        g.db.update_review(json)
+
+        return "200"
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.remove_review(json["review_id"])
+        
+        return "200"
+
+
+@app.route("/admin/tags", methods=["GET", "DELETE", "POST", "PATCH"])
+@cross_origin()
+def admin_tags():
+    # Only give access to this page if the cookie matches a admin
+    verification_cookie: str = request.cookies.get("verification")
+
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
+
+    if request.method == "GET":
+        tags = g.db.get_tags()
+        return render_template("admin_tag.html", tags=tags)
+
+    if request.method == "PATCH":
+        json = request.get_json(force=True)
+        g.db.update_tag_by_id(json)
+        return "200"
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        g.db.create_tag(json)
+        return "200"
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.delete_tag_by_id(json["id"])
+        return "200"
+
+
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
 # POST to add a user, PATCH to update a users permissions, DELETE to delete.

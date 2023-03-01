@@ -86,6 +86,26 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def remove_review(self, review_id):
+        sql = "DELETE FROM Review WHERE id = %s"
+        val = (review_id, )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def update_review(self, review):
+        sql = "UPDATE Review SET user_id = %s, item_id = %s, score = %s, comment = %s WHERE id = %s"
+        val = (
+            review["user_id"], 
+            review["item_id"],
+            review["rating"],
+            review["comment"],
+            review["id"], 
+        )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+        
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
         val = (product_id,)
@@ -236,6 +256,25 @@ class DB:
         self.cursor.execute(sql, val)
         # print(self.cursor.fetchall())
         return self.cursor.fetchall()
+
+    def delete_tag_by_id(self, id):
+        sql = "DELETE FROM Tag WHERE id = %s"
+        val = (id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def update_tag_by_id(self, new_tag):
+        sql = "UPDATE Tag SET value = %s WHERE id = %s"
+        val = (new_tag["value"], new_tag["id"])
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def create_tag(self, new_tag):
+        sql = "INSERT INTO Tag (value) VALUES (%s)"
+        val = (new_tag["value"], )
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+        pass
 
     def add_to_cart(self, user_id, item_id):
         """
