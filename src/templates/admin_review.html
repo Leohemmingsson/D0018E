@@ -28,26 +28,26 @@
             <th>rating</th>
             <th>comment</th>
         </tr>
-        {% for tag in tags%}
+        {% for review in reviews %}
         <tr>
             <th> 
                 {{review.id}}
             </th>
             <th> 
-                <input type="text" id="{{review.id}}-user ID" value="{{review.user_id}}">
+                <input type="text" id="{{review.id}}-user_id" value="{{review.user_id}}">
             </th>
             <th> 
-                <input type="text" id="{{review.id}}-item ID" value="{{review.item_id}}">
+                <input type="text" id="{{review.id}}-item_id" value="{{review.item_id}}">
             </th>
             <th> 
-                <input type="text" id="{{review.id}}-rating " value="{{review.rating}}">
+                <input type="text" id="{{review.id}}-rating" value="{{review.rating}}">
             </th>
             <th> 
-                <input type="text" id="{{item.id}}-comment" value="{{review.comment}}">
+                <input type="text" id="{{review.id}}-comment" value="{{review.comment}}">
             </th>
             <th>
                 <button onclick="edit({{review.to_json()}})">update</button>
-                <input value="delete" type="button" onclick="del({{review.id}})">
+                <input value="delete" type="button" onclick="del('{{review.id}}')">
             </th>
         </tr>
         {% endfor %}
@@ -73,9 +73,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="" id="add-tag-form" target="dummyframe" method="post">
-                        <lable for="id">id</lable>
-                        <input value="id" type="text" class="form-control" id="id"></input>
+                    <form action="" id="add-review-form" target="dummyframe" method="post">
                         <lable for="user_id">user_id</lable>
                         <input value="user_id" type="text" class="form-control" id="user_id"></input>
                         <lable for="item_id">item_id</lable>
@@ -90,4 +88,37 @@
             </div>
         </div>
     </div>
+    <script>
+        function edit() {
+            
+        }
+
+        function del(id) {
+
+        }
+        document.getElementById("add-review-form").onsubmit = async(e) => {
+            e.preventDefault();
+
+            let user_id = document.getElementById("user_id").value;
+            let item_id = document.getElementById("item_id").value;
+            let rating = document.getElementById("rating").value;
+            let comment = document.getElementById("comment").value;
+
+            fetch("/admin/reviews", 
+                {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        "Content-Type": "application/json"
+                    },
+                    method: "POST", 
+                    body: JSON.stringify({
+                        "user_id" : user_id,
+                        "item_id" : item_id,
+                        "rating" : rating,
+                        "comment" : comment
+                    })
+                }
+            ).then(() => window.location.reload());
+        }
+    </script>
 </body>

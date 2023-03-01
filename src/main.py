@@ -91,7 +91,7 @@ def admin():
     return render_template("admin_index.html", users=enumerate(users))
 
 
-@app.route("/admin/reviews", methods=["GET"])
+@app.route("/admin/reviews", methods=["GET", "POST", "PATCH", "DELETE"])
 @cross_origin()
 def admin_reviews():
     # Only give access to this page if the cookie matches a admin
@@ -100,10 +100,33 @@ def admin_reviews():
     if not g.db.is_admin(verification_cookie):
         return "403: Forbidden"
 
-    # reviews = g.db.get_reviews()
+    if request.method == "GET":
+        products = g.db.get_products()
+        reviews = [g.db.get_reviews_for_product(p[0]) for p in products]
+        reviews = [Review(item) for sublist in reviews for item in sublist]
+        return render_template("admin_review.html", reviews=reviews)
 
-    # Idk why Max chose to do this with the user table, but I'll do it here too
-    return render_template("admin_review.html")  # reviews=enumerate(reviews))
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        review = (
+            None,
+            json["user_id"],
+            json["item_id"],
+            json["rating"],
+            json["comment"],
+        )
+        g.db.create_review(Review(review))
+
+        return "200"
+
+    if request.method == "PATCH":
+        pass
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.remove_review(json["id"])
+        
+        return "200"
 
 
 @app.route("/admin/tags", methods=["GET", "DELETE", "POST", "PATCH"])
