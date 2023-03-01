@@ -148,8 +148,10 @@ def admin_order():
         return "403: Forbidden"
 
     if request.method == "GET":
-        # orders = g.db.get_orders()
-        return render_template("admin_order_view.html")  # , orders=enumerate(orders))
+        fetched_orders = g.db.get_all_orders()
+        orders = [Order(order, g.db) for order in fetched_orders]
+
+        return render_template("admin_order_view.html", orders=enumerate(orders))
 
     # if request.method == "PATCH":
     #     info = request.get_json(force=True)

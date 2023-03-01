@@ -150,7 +150,7 @@ class DB:
         self.cursor.execute(sql, val)
         try:
             return self.cursor.fetchone()[0]
-        except: 
+        except:
             return None
 
     def add_product(self, description, name, quantity, price, image):
@@ -178,6 +178,12 @@ class DB:
         self.mydb.commit()
 
     ### STUFF WITH ORDERS ###
+    def get_all_orders(self):
+        sql = "SELECT * FROM OrderHead"
+        self.cursor.execute(sql)
+        fetched_orders = self.cursor.fetchall()
+        return fetched_orders
+
     def get_orders_for_user(self, user_id):
         sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
         val = (user_id,)
