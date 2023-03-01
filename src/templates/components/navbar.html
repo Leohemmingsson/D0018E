@@ -43,7 +43,11 @@
                         <li>
                             <a href="/user.html" class="nav-link text-black-50">
                                 <i class="fa-solid fa-user"></i>
-                                User
+                                {% if user %}
+                                {{user}}
+                                {% else %}
+                                Guest
+                                {% endif %}
                             </a>
                         </li>
                     </ul>
@@ -57,10 +61,22 @@
                 </form>
 
                 <div class="text-end">
-                    <a href="/login" role="button" class="btn btn-light text-dark me-2">Login</a>
-                    <a href="/signup" role="button" class="btn btn-primary">Sign-up</a>
+                    {% if user %}
+                        <button type="button" class ="btn btn-info" onclick="login()"> logout </button>
+                    {% else %}
+                        <a href="/login" role="button" class="btn btn-light text-dark me-2">Login</a>
+                        <a href="/signup" role="button" class="btn btn-primary">Sign-up</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </header>
+
+    <script>
+        function login() {
+            document.cookie = "verification=-1; expires=Sat, 20 Jan 1980 12:00:00 UTC; SameSite=None";
+            window.location.href = "/login";
+            window.location.replace("/login");
+        }
+    </script>
 </body>
