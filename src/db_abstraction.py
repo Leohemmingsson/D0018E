@@ -156,6 +156,12 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def is_product(self, product_id):
+        sql = "SELECT * FROM Item WHERE id = %s"
+        val = (product_id,)
+        self.cursor.execute(sql, val)
+        return len(self.cursor.fetchall()) > 0
+
     def remove_product(self, item_id):
         sql = "DELETE FROM Item WHERE id = %s"
         val = (item_id,)
