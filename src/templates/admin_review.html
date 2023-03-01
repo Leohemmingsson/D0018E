@@ -89,13 +89,28 @@
         </div>
     </div>
     <script>
-        function edit() {
-            
+        function edit(review) {
+            fetch("http://" + window.location.host + '/admin/reviews', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify(review)
+            }).then(() => window.location.reload());
         }
 
-        function del(id) {
-
+        function del(review_id) {
+            fetch("http://" + window.location.host + '/admin/reviews', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({
+                    "review_id" : review_id
+                })
+            }).then(() => window.location.reload());
         }
+
         document.getElementById("add-review-form").onsubmit = async(e) => {
             e.preventDefault();
 

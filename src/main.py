@@ -120,11 +120,15 @@ def admin_reviews():
         return "200"
 
     if request.method == "PATCH":
-        pass
+        json = request.get_json(force=True)
+        print(json)
+        g.db.update_review(json)
+
+        return "200"
 
     if request.method == "DELETE":
         json = request.get_json(force=True)
-        g.db.remove_review(json["id"])
+        g.db.remove_review(json["review_id"])
         
         return "200"
 

@@ -86,6 +86,26 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def remove_review(self, review_id):
+        sql = "DELETE FROM Review WHERE id = %s"
+        val = (review_id, )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def update_review(self, review):
+        sql = "UPDATE Review SET user_id = %s, item_id = %s, score = %s, comment = %s WHERE id = %s"
+        val = (
+            review["user_id"], 
+            review["item_id"],
+            review["rating"],
+            review["comment"],
+            review["id"], 
+        )
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+        
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
         val = (product_id,)
