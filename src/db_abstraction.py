@@ -174,7 +174,58 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    ### STUFF WITH ORDERS ###
+    def get_orders_for_user(self, user_id):
+        sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
+        val = (user_id,)
+
+        self.cursor.execute(sql, val)
+        fetched_orders = self.cursor.fetchall()
+        return fetched_orders
+
+    def get_price_for_order(self, order_id):
+        sql = "SELECT SUM(price) FROM ItemGroup WHERE order_id = %s"
+        val = (order_id,)
+
+        self.cursor.execute(sql, val)
+        fetched_price = self.cursor.fetchone()
+        return fetched_price[0]
+
+    def get_products_from_order(self, order_id, user_id):
+        # sql = "SELECT ItemGroup.* FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
+        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
+        val = (order_id, user_id)
+        self.cursor.execute(sql, val)
+        fetched_products = self.cursor.fetchall()
+        return fetched_products
+
     ### STUFF WITH CART ###
+    def checkout_cart(self, user_id):
+        cart_id = self.__get_active_cart_id(user_id)
+
+        if self.__is_no_product_in_cart(cart_id):
+            return
+
+        sql = "UPDATE OrderHead SET status = 'done' WHERE id = %s"
+        val = (cart_id,)
+        self.cursor.execute(sql, val)
+
+        for item in self.get_products_from_order(cart_id, user_id):
+            sql = "UPDATE ItemGroup SET price = %s WHERE item_id = %s and order_id = %s"
+            item_price = self.__get_price_for_item(item[0])
+            price = int(item_price) * int(item[3])
+            val = (price, item[0], cart_id)
+            self.cursor.execute(sql, val)
+
+        self.mydb.commit()
+
+    def __is_no_product_in_cart(self, cart_id):
+        sql = "SELECT * FROM ItemGroup WHERE order_id = %s"
+        val = (cart_id,)
+
+        self.cursor.execute(sql, val)
+        return len(self.cursor.fetchall()) == 0
+
     def get_cart(self, user_id):
         cart_id = self.__get_active_cart_id(user_id)
         sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, Item.price, Item.img, ItemGroup.quantity FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
@@ -190,7 +241,7 @@ class DB:
         """
         cart_id = self.__get_active_cart_id(user_id)
 
-        if not self.__is_item_in_cart(user_id, item_id, cart_id):
+        if not self.__is_item_in_cart(item_id, cart_id):
             self.__add_item_to_cart(cart_id, item_id)
             return
         self.__add_quant_cart_item(cart_id, item_id)
@@ -247,8 +298,8 @@ class DB:
     def __add_quant_cart_item(self, cart_id, item_id):
         sql = "UPDATE ItemGroup SET quantity = quantity + 1 WHERE order_id = %s and item_id = %s"
         val = (cart_id, item_id)
-
         self.cursor.execute(sql, val)
+
         self.mydb.commit()
 
     def __add_item_to_cart(self, order_id, item_id):
@@ -257,9 +308,15 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
-    def __is_item_in_cart(self, user_id, item_id, order_id):
-        sql = "SELECT * FROM ItemGroup WHERE order_id = %s and item_id = %s and order_id = %s"
-        val = (user_id, item_id, order_id)
+    def __get_price_for_item(self, item_id):
+        sql = "SELECT price FROM Item WHERE id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
+        return self.cursor.fetchone()[0]
+
+    def __is_item_in_cart(self, item_id, order_id):
+        sql = "SELECT * FROM ItemGroup WHERE  item_id = %s and order_id = %s"
+        val = (item_id, order_id)
         self.cursor.execute(sql, val)
         return len(self.cursor.fetchall()) > 0
 
@@ -267,5 +324,4 @@ class DB:
 if __name__ == "__main__":
     db = DB()
 
-    tags = db.get_tags_for_product(2)
-    print(tags)
+    db.checkout_cart(1)
