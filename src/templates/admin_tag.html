@@ -31,13 +31,9 @@
             </th>
             <th> 
                 <input type="text" name="{{tag.value}}-value" value="{{tag.value}}">
-                <button onclick="edit({{tag.value}}, '{{tag.value}}', 'name')"></button>
-                <form onsubmit="edit({{item.id}}, {{item.price}}, 'price')">
-                    <input type="text" name="id" value="{{item.price}}">
-                    <input type="submit" value="edit">
-                </form>
             </th>
             <th>
+                <button onclick="edit({{tag.to_json()}})"> update </button>
                 <input value="delete" type="button" onclick="del({{tag.id}})">
             </th>
         </tr>
