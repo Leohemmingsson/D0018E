@@ -14,6 +14,7 @@ import os
 import mysql.connector
 from item import Item
 from review import Review
+from order import Order
 import jsonschema
 from jsonschema.exceptions import ValidationError
 from schemas import user_schema
@@ -46,9 +47,13 @@ def close_db(exception):
     g.db.close()
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @cross_origin()
 def index():
+    if request.method == "POST":
+        cookie = request.cookies.get("verification")
+        g.db.checkout_cart(cookie)
+
     sort_by = request.args.get("sortby")
 
     fetched_products = g.db.get_products(sort_by)
@@ -296,6 +301,22 @@ def item_page(product_number):
             "item_page.html", item=item, reviews=reviews, is_review=is_review
         )
     return "404: Not found"
+
+
+@app.route("/order", methods=["GET"])
+def order_history():
+    cookie = request.cookies.get("verification")
+    fetched_orders = g.db.get_orders_for_user(cookie)
+    orders = [Order(order, g.db) for order in fetched_orders]
+    return render_template("order_index.html", orders=enumerate(orders))
+
+
+@app.route("/order/<int:order_id>", methods=["GET"])
+def one_order(order_id):
+    cookie = request.cookies.get("verification")
+    fetched_products = g.db.get_products_from_order(order_id, cookie)
+    items = [Item(item) for item in fetched_products]
+    return render_template("one_order.html", items=enumerate(items))
 
 
 @app.route("/favicon.ico")
