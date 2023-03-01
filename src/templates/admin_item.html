@@ -32,25 +32,21 @@
             </th>
             <th> 
                 <input type="text" id="{{item.id}}-name" value="{{item.name}}">
-                <button onclick="edit('name', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
                 <input type="text" id="{{item.id}}-quantity" value="{{item.quantity}}">
-                <button onclick="edit('quantity', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
                 <input type="text" id="{{item.id}}-price" value="{{item.price}}">
-                <button onclick="edit('price', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
                 <input type="text" id="{{item.id}}-description" value="{{item.description}}">
-                <button onclick="edit('description', {{item.to_json()}})"> edit </button>
             </th>
             <th> 
                 <input type="text" id="{{item.id}}-image" value="{{item.image}}">
-                <button onclick="edit('name', {{item.to_json()}})"> edit </button>
             </th>
             <th>
+                <button onclick="edit({{item.to_json()}})"> update </button>
                 <input value="delete" type="button" onclick="del({{item.id}})">
             </th>
         </tr>
@@ -96,17 +92,26 @@
         </div>
     </div>
     <script>
-        function edit(attribute, item) {
-            let new_attribute_value = document.getElementById(item.id + "-" + attribute).value;
-            let new_item = item;
-            new_item[attribute] = new_attribute_value;
+        function edit(item) {
+            let new_name = document.getElementById(item.id + "-name").value;
+            let new_quantity = document.getElementById(item.id + "-quantity").value;
+            let new_price = document.getElementById(item.id + "-price").value;
+            let new_description = document.getElementById(item.id + "-description").value;
+            let new_image = document.getElementById(item.id + "-image").value;
 
             fetch("http://" + window.location.host + '/admin/items', {
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 },
                 method: 'PATCH',
-                body: JSON.stringify(new_item)
+                body: JSON.stringify({
+                    "id" : item.id,
+                    "name" : new_name,
+                    "description" : new_description,
+                    "price" : new_price,
+                    "quantity" : new_quantity,
+                    "image" : new_image,
+                })
             }).then(() => window.location.reload());
         }
 
