@@ -1,4 +1,13 @@
-from flask import Flask, render_template, request, make_response, g, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    make_response,
+    g,
+    redirect,
+    url_for,
+    send_from_directory,
+)
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
@@ -50,10 +59,18 @@ def index():
 
     tags = [{"name": name, "href": f"/?sortby={name}"} for (_, name) in fetched_tags]
 
+    verification_cookie: str = request.cookies.get("verification")
+    if verification_cookie:
+        products_in_basket = g.db.get_cart(verification_cookie)
+        items_in_basket = [Item(product) for product in products_in_basket]
+    else:
+        items_in_basket = []
+
     return render_template(
         "index.html",
         items=items,
         tags=tags,
+        items_in_basket=items_in_basket,
     )
 
 
@@ -71,18 +88,22 @@ def admin():
 
     users = g.db.get_users()
 
-    return render_template("admin.html", users=enumerate(users))
+    return render_template("admin_index.html", users=enumerate(users))
 
 
 # Route for the admins to interact with the users.
 # Requires a valid admin id in cookies.
 # POST to add a user, PATCH to update a users permissions, DELETE to delete.
-@app.route("/admin/users", methods=["POST", "PATCH", "DELETE"])
+@app.route("/admin/users", methods=["POST", "PATCH", "DELETE", "GET"])
 @cross_origin()
 def admin_users():
     req_cookies = request.cookies.get("verification")
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
+
+    if request.method == "GET":
+        users = g.db.get_users()
+        return render_template("admin_users.html", users=enumerate(users))
 
     if request.method == "POST":
         json = request.get_json(force=True)
@@ -209,6 +230,32 @@ def login():
             return render_template("login.html", error="Account not found!")
 
 
+# POST   add a item to the cart
+# DELETE delete a item from the cart
+@app.route("/cart/<int:item_id>", methods=["POST", "DELETE"])
+def cart(item_id):
+    if request.method == "POST":
+        # The user id (verification cookie) is also the cart id.
+        cart_id = request.cookies.get("verification")
+        if not cart_id:
+            # If there is no verification cookie then we are not logged in.
+            return "You are not logged in!"
+
+        g.db.add_to_cart(cart_id, item_id)
+        print(f"user #{cart_id} added item #{item_id} to their cart")
+
+    elif request.method == "DELETE":
+        cart_id = request.cookies.get("verification")
+        if not cart_id:
+            # If there is no verification cookie then we are not logged in.
+            return "You are not logged in!"
+
+        g.db.remove_from_cart(cart_id, item_id)
+        print(f"Removing item #{item_id} from cart #{cart_id}")
+
+    return "200"
+
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
@@ -249,6 +296,15 @@ def item_page(product_number):
             "item_page.html", item=item, reviews=reviews, is_review=is_review
         )
     return "404: Not found"
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 
 
 if __name__ == "__main__":
