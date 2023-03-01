@@ -298,6 +298,11 @@ def item_page(product_number):
     return "404: Not found"
 
 
+@app.route("/order", methods=["GET"])
+def order_history():
+    return render_template("order.html")
+
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(
