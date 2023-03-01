@@ -24,17 +24,17 @@
             <th>id</th>
             <th>value</th>
         </tr>
-        {% for tag in tags%}
+        {% for (id, value) in tags%}
         <tr>
             <th> 
-                {{tag.id}}
+                {{id}}
             </th>
             <th> 
-                <input type="text" name="{{tag.value}}-value" value="{{tag.value}}">
+                <input type="text" id="{{id}}-value" value="{{value}}">
             </th>
             <th>
-                <button onclick="edit({{tag.to_json()}})"> update </button>
-                <input value="delete" type="button" onclick="del({{tag.id}})">
+                <button onclick="edit('{{id}}')"> update </button>
+                <input value="delete" type="button" onclick="del('{{id}}')">
             </th>
         </tr>
         {% endfor %}
@@ -62,12 +62,54 @@
                 <div class="modal-body">
                     <form action="" id="add-tag-form" target="dummyframe" method="post">
                         <lable for="value">Value</lable>
-                        <input value="value" type="text" class="form-control" id="value"></input>
+                        <input value="" type="text" class="form-control" id="value"></input>
                         <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function edit(tag_id) {
+            let value = document.getElementById(tag_id+"-value").value;
+            fetch("http://" + window.location.host + '/admin/tags', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({
+                    "id" : tag_id,
+                    "value" : value,
+                })
+            }).then(() => window.location.reload());
+        }
+
+        function del(id) {
+            fetch("http://" + window.location.host + '/admin/tags', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({
+                    "id" : id,
+                })
+            }).then(() => window.location.reload());
+        }
+        document.getElementById("add-tag-form").onsubmit = async(e) => {
+            e.preventDefault();
+
+            let value = document.getElementById("value").value;
+
+            fetch("/admin/tags", 
+                {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    method: "POST", 
+                    body: JSON.stringify({"value" : value})
+                }
+            ).then(() => window.location.reload());
+        }
+    </script>
 </body>
 </html>

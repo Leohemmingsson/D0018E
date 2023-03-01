@@ -183,6 +183,25 @@ class DB:
         # print(self.cursor.fetchall())
         return self.cursor.fetchall()
 
+    def delete_tag_by_id(self, id):
+        sql = "DELETE FROM Tag WHERE id = %s"
+        val = (id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def update_tag_by_id(self, new_tag):
+        sql = "UPDATE Tag SET value = %s WHERE id = %s"
+        val = (new_tag["value"], new_tag["id"])
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def create_tag(self, new_tag):
+        sql = "INSERT INTO Tag (value) VALUES (%s)"
+        val = (new_tag["value"], )
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+        pass
+
     def add_to_cart(self, user_id, item_id):
         """
         Add a item to the cart of the user

@@ -106,7 +106,7 @@ def admin_reviews():
     return render_template("admin_review.html")  # reviews=enumerate(reviews))
 
 
-@app.route("/admin/tags", methods=["GET"])
+@app.route("/admin/tags", methods=["GET", "DELETE", "POST", "PATCH"])
 @cross_origin()
 def admin_tags():
     # Only give access to this page if the cookie matches a admin
@@ -115,9 +115,24 @@ def admin_tags():
     if not g.db.is_admin(verification_cookie):
         return "403: Forbidden"
 
-    # tags = g.db.get_tags()
-    # Idk why Max chose to do this with the user table, but I'll do it here too
-    return render_template("admin_tag.html")  # , tags=enumerate(tags))
+    if request.method == "GET":
+        tags = g.db.get_tags()
+        return render_template("admin_tag.html", tags=tags)
+
+    if request.method == "PATCH":
+        json = request.get_json(force=True)
+        g.db.update_tag_by_id(json)
+        return "200"
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        g.db.create_tag(json)
+        return "200"
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.delete_tag_by_id(json["id"])
+        return "200"
 
 
 # Route for the admins to interact with the users.
