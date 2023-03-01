@@ -148,7 +148,10 @@ class DB:
         sql = "SELECT username FROM User WHERE id = %s"
         val = (user_id,)
         self.cursor.execute(sql, val)
-        return self.cursor.fetchone()[0]
+        try:
+            return self.cursor.fetchone()[0]
+        except: 
+            return None
 
     def add_product(self, description, name, quantity, price, image):
         sql = "INSERT INTO Item (description, name, in_stock, price, img) VALUES (%s, %s, %s, %s, %s)"

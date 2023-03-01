@@ -71,6 +71,7 @@ def index():
         items=items,
         tags=tags,
         items_in_basket=items_in_basket,
+        user = g.db.get_username(verification_cookie)
     )
 
 
@@ -193,7 +194,7 @@ def items():
 @cross_origin()
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", user=g.db.get_username(request.cookies.get("verification")))
 
     elif request.method == "POST":
         username: str = request.form["uname"]
@@ -227,7 +228,7 @@ def login():
 
             # Invalid login! Return a error and log the event.
             log.log(f"Someone tried to log in as {username} with password {password}")
-            return render_template("login.html", error="Account not found!")
+            return render_template("login.html", error="Account not found!", user=g.db.get_username(request.cookies.get("verification")))
 
 
 # POST   add a item to the cart
@@ -259,7 +260,7 @@ def cart(item_id):
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
-        return render_template("signup.html")
+        return render_template("signup.html", user=g.db.get_username(request.cookies.get("verification")))
     elif request.method == "POST":
         if request.form["password"] == request.form["password2"]:
             g.db.create_customer(request.form)
@@ -268,7 +269,7 @@ def signup():
 
 @app.route("/terms_of_service")
 def terms_of_service():
-    return render_template("terms_of_service.html")
+    return render_template("terms_of_service.html", user = g.db.get_username(request.cookies.get("verification")))
 
 
 @app.route("/product/<int:product_number>", methods=["GET", "POST"])
@@ -293,7 +294,7 @@ def item_page(product_number):
         reviews = [Review(review, g.db) for review in fetched_reviews]
         is_review = g.db.is_review(request.cookies.get("verification"), product_number)
         return render_template(
-            "item_page.html", item=item, reviews=reviews, is_review=is_review
+            "item_page.html", item=item, reviews=reviews, is_review=is_review, user = g.db.get_username(request.cookies.get("verification"))
         )
     return "404: Not found"
 
