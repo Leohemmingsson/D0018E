@@ -1,3 +1,4 @@
+from item import Item
 import mysql.connector
 from dotenv import load_dotenv
 import os
@@ -149,14 +150,25 @@ class DB:
         self.cursor.execute(sql, val)
         return self.cursor.fetchone()[0]
 
-    def is_product(self, product_id):
-        sql = "SELECT * FROM Item WHERE id = %s"
-        val = (product_id,)
+    def add_product(self, description, name, quantity, price, image):
+        sql = "INSERT INTO Item (description, name, in_stock, price, img) VALUES (%s, %s, %s, %s, %s)"
+        val = (description, name, quantity, price, image)
         self.cursor.execute(sql, val)
-        return len(self.cursor.fetchall()) > 0
+        self.mydb.commit()
+
+    def remove_product(self, item_id):
+        sql = "DELETE FROM Item WHERE id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+    def update_product(self, item_id, description, name, quantity, price, image):
+        sql = "UPDATE Item SET description = %s, name = %s, in_stock = %s, price = %s, img = %s WHERE id = %s"
+        val = (description, name, quantity, price, image, item_id)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
 
     ### STUFF WITH CART ###
-
     def get_cart(self, user_id):
         cart_id = self.__get_active_cart_id(user_id)
         sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, Item.price, Item.img, ItemGroup.quantity FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"

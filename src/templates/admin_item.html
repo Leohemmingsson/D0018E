@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D0018E</title>
+    <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>item name</th>
+            <th>n in stock</th>
+            <th>price</th>
+            <th>description</th>
+            <th>img url</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <th> 
+                {{item.id}}
+            </th>
+            <th> 
+                <input type="text" id="{{item.id}}-name" value="{{item.name}}">
+            </th>
+            <th> 
+                <input type="text" id="{{item.id}}-quantity" value="{{item.quantity}}">
+            </th>
+            <th> 
+                <input type="text" id="{{item.id}}-price" value="{{item.price}}">
+            </th>
+            <th> 
+                <input type="text" id="{{item.id}}-description" value="{{item.description}}">
+            </th>
+            <th> 
+                <input type="text" id="{{item.id}}-image" value="{{item.image}}">
+            </th>
+            <th>
+                <button onclick="edit({{item.to_json()}})"> update </button>
+                <input value="delete" type="button" onclick="del({{item.id}})">
+            </th>
+        </tr>
+        {% endfor %}
+
+    </table>
+     <!-- Dummy frame to prevent form target from redirecting us... -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
+    <!-- button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i
+            class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Provide information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="add-item-form" target="dummyframe" method="post">
+                        <lable for="name">Name</lable>
+                        <input name="name" type="text" class="form-control" id="name"></input>
+                        <label for="description">Description</label>
+                        <input name="description" type="text" class="form-control" id="description"></input>
+                        <label for="quantity">Quantity</label>
+                        <input name="quantity" type="text" class="form-control" id="quantity"></input>
+                        <label for="price">Price</label>
+                        <input name="price" type="text" class="form-control" id="price"></input>
+                        <label for="image">Image link</label>
+                        <input name="image" type="text" class="form-control" id="image"></input>
+
+                        <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function edit(item) {
+            let new_name = document.getElementById(item.id + "-name").value;
+            let new_quantity = document.getElementById(item.id + "-quantity").value;
+            let new_price = document.getElementById(item.id + "-price").value;
+            let new_description = document.getElementById(item.id + "-description").value;
+            let new_image = document.getElementById(item.id + "-image").value;
+
+            fetch("http://" + window.location.host + '/admin/items', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({
+                    "id" : item.id,
+                    "name" : new_name,
+                    "description" : new_description,
+                    "price" : new_price,
+                    "quantity" : new_quantity,
+                    "image" : new_image,
+                })
+            }).then(() => window.location.reload());
+        }
+
+        function del(item_id) {
+            fetch('/admin/items', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({ "item_id": item_id })
+            }).then(() => window.location.reload());
+        }
+    </script>
+
+</body>
+
+</html>
