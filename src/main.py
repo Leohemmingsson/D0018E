@@ -86,7 +86,7 @@ def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    print(
+    log.log(
         f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}"
     )
     if not g.db.is_admin(verification_cookie):
@@ -128,13 +128,13 @@ def admin_users():
 
         if info["id"] and info["type"]:
             g.db.set_user_type(info["id"], info["type"])
-            print(f"Set user with id {info['id']} to {info['type']}")
+            log.log(f"Set user with id {info['id']} to {info['type']}")
 
     if request.method == "DELETE":
         # Delete a user
         json = request.get_json(force=True)
         if json["id"]:
-            print(f"Trying to delete user with id {json['id']}")
+            log.log(f"Trying to delete user with id {json['id']}")
             g.db.delete_user_by_id(json["id"])
 
     return "200"
@@ -176,7 +176,7 @@ def items():
         # None check
         if id:
             g.db.remove_product(id)
-            print("Removed item with id: {id}")
+            log.log("Removed item with id: {id}")
 
             return "200"
 
@@ -216,14 +216,14 @@ def login():
             user_type: str = result[0][5]
 
             # TODO: Add as proper logging later
-            print(f"{username} ({uid}) logged in as {user_type}")
+            log.log(f"{username} ({uid}) logged in as {user_type}")
 
             # Redirect based on user type
             if user_type == "admin":
-                print("redirecting to admin.html")
+                log.log("redirecting to admin.html")
                 res = make_response(redirect(url_for("admin")))
             else:
-                print("redirecting to index.html")
+                log.log("redirecting to index.html")
                 res = make_response(redirect(url_for("index")))
 
             res.set_cookie("verification", str(uid))
@@ -248,7 +248,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.add_to_cart(cart_id, item_id)
-        print(f"user #{cart_id} added item #{item_id} to their cart")
+        log.log(f"user #{cart_id} added item #{item_id} to their cart")
 
     elif request.method == "DELETE":
         cart_id = request.cookies.get("verification")
@@ -257,7 +257,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.remove_from_cart(cart_id, item_id)
-        print(f"Removing item #{item_id} from cart #{cart_id}")
+        log.log(f"Removing item #{item_id} from cart #{cart_id}")
 
     return "200"
 
