@@ -1,4 +1,13 @@
-from flask import Flask, render_template, request, make_response, g, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    make_response,
+    g,
+    redirect,
+    url_for,
+    send_from_directory,
+)
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 import os
@@ -232,6 +241,15 @@ def item_page(product_number):
             "item_page.html", item=item, reviews=reviews, is_review=is_review
         )
     return "404: Not found"
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
 
 
 if __name__ == "__main__":
