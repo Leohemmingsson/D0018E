@@ -347,33 +347,8 @@ def signup():
         )
     elif request.method == "POST":
         if request.form["password"] == request.form["password2"]:
-
-            try:
-                jsonschema.validate(instance=request.form, schema=user_schema)
-                user_json = request.form
-            except ValidationError:
-                log.log("validation error")
-                return render_template(
-                    "signup.html", user=g.db.get_username(request.cookies.get("verification"))
-                )
-
             g.db.create_customer(request.form)
-            log.log("redirecting to index.html")
-            res = make_response(redirect(url_for("index")))
-
-            result = g.db.is_username_password(request.form["username"], request.form["password"])
-
-            if len(result) > 0:
-
-                # Extract relevant information from the DB response
-                uid: str = result[0][0]
-                username: str = result[0][1]
-                user_type: str = result[0][5]
-
-                res.set_cookie("verification", str(uid))
-                return res
-            else:
-                return "Signup failed!"
+            return "200"
 
 
 @app.route("/terms_of_service")
@@ -420,7 +395,11 @@ def order_history():
     cookie = request.cookies.get("verification")
     fetched_orders = g.db.get_orders_for_user(cookie)
     orders = [Order(order, g.db) for order in fetched_orders]
-    return render_template("order_index.html", orders=enumerate(orders))
+    return render_template(
+        "order_index.html",
+        orders=enumerate(orders),
+        user=g.db.get_username(request.cookies.get("verification")),
+    )
 
 
 @app.route("/order/<int:order_id>", methods=["GET"])
