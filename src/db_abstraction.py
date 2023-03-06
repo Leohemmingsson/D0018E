@@ -348,7 +348,11 @@ class DB:
     def __get_active_cart_id(self, user_id):
         if not len(self.__get_active_cart(user_id)) > 0:
             self.__create_cart(user_id)
-        return self.__get_active_cart(user_id)[0][0]
+                
+        try:
+            return self.__get_active_cart(user_id)[0][0]
+        except:
+            return None
 
     def __get_active_cart(self, user_id):
         sql = (
