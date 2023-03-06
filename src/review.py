@@ -11,3 +11,12 @@ class Review:
             self.username = db.get_username(self.user_id)
         else:
             self.username = None
+
+    def to_json(self):
+        return {
+            "id" : self.id,
+            "user_id" : self.user_id,
+            "item_id" : self.item_id,
+            "rating" : self.rating,
+            "comment" : self.comment,
+        }

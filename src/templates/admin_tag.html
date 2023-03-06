@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D0018E</title>
+    <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+        integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header>
+        {% include "components/navbar_admin.html" %}
+    </header>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>value</th>
+        </tr>
+        {% for (id, value) in tags%}
+        <tr>
+            <th> 
+                {{id}}
+            </th>
+            <th> 
+                <input type="text" id="{{id}}-value" value="{{value}}">
+            </th>
+            <th>
+                <button onclick="edit('{{id}}')"> update </button>
+                <input value="delete" type="button" onclick="del('{{id}}')">
+            </th>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+    <!-- button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i
+            class="fa-solid fa-plus"></i>
+    </button>
+     <!-- Dummy frame to prevent form target from redirecting us... -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Provide information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="add-tag-form" target="dummyframe" method="post">
+                        <lable for="value">Value</lable>
+                        <input value="" type="text" class="form-control" id="value"></input>
+                        <button type="submit" class="modal-button" data-bs-dismiss="modal">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function edit(tag_id) {
+            let value = document.getElementById(tag_id+"-value").value;
+            fetch("http://" + window.location.host + '/admin/tags', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'PATCH',
+                body: JSON.stringify({
+                    "id" : tag_id,
+                    "value" : value,
+                })
+            }).then(() => window.location.reload());
+        }
+
+        function del(id) {
+            fetch("http://" + window.location.host + '/admin/tags', {
+                headers: {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                method: 'DELETE',
+                body: JSON.stringify({
+                    "id" : id,
+                })
+            }).then(() => window.location.reload());
+        }
+        document.getElementById("add-tag-form").onsubmit = async(e) => {
+            e.preventDefault();
+
+            let value = document.getElementById("value").value;
+
+            fetch("/admin/tags", 
+                {
+                    headers: {
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    method: "POST", 
+                    body: JSON.stringify({"value" : value})
+                }
+            ).then(() => window.location.reload());
+        }
+    </script>
+</body>
+</html>

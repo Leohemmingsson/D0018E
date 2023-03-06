@@ -86,7 +86,7 @@ def admin():
     # Only give access to this page if the cookie matches a admin
     verification_cookie: str = request.cookies.get("verification")
 
-    print(
+    log.log(
         f"is_admin: {g.db.is_admin(verification_cookie)}, cookie: {verification_cookie}"
     )
     if not g.db.is_admin(verification_cookie):
@@ -95,6 +95,77 @@ def admin():
     users = g.db.get_users()
 
     return render_template("admin_index.html", users=enumerate(users))
+
+
+@app.route("/admin/reviews", methods=["GET", "POST", "PATCH", "DELETE"])
+@cross_origin()
+def admin_reviews():
+    # Only give access to this page if the cookie matches a admin
+    verification_cookie: str = request.cookies.get("verification")
+
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
+
+    if request.method == "GET":
+        products = g.db.get_products()
+        reviews = [g.db.get_reviews_for_product(p[0]) for p in products]
+        reviews = [Review(item) for sublist in reviews for item in sublist]
+        return render_template("admin_review.html", reviews=reviews)
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        review = (
+            None,
+            json["user_id"],
+            json["item_id"],
+            json["rating"],
+            json["comment"],
+        )
+        g.db.create_review(Review(review))
+
+        return "200"
+
+    if request.method == "PATCH":
+        json = request.get_json(force=True)
+        print(json)
+        g.db.update_review(json)
+
+        return "200"
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.remove_review(json["review_id"])
+
+        return "200"
+
+
+@app.route("/admin/tags", methods=["GET", "DELETE", "POST", "PATCH"])
+@cross_origin()
+def admin_tags():
+    # Only give access to this page if the cookie matches a admin
+    verification_cookie: str = request.cookies.get("verification")
+
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
+
+    if request.method == "GET":
+        tags = g.db.get_tags()
+        return render_template("admin_tag.html", tags=tags)
+
+    if request.method == "PATCH":
+        json = request.get_json(force=True)
+        g.db.update_tag_by_id(json)
+        return "200"
+
+    if request.method == "POST":
+        json = request.get_json(force=True)
+        g.db.create_tag(json)
+        return "200"
+
+    if request.method == "DELETE":
+        json = request.get_json(force=True)
+        g.db.delete_tag_by_id(json["id"])
+        return "200"
 
 
 # Route for the admins to interact with the users.
@@ -128,13 +199,13 @@ def admin_users():
 
         if info["id"] and info["type"]:
             g.db.set_user_type(info["id"], info["type"])
-            print(f"Set user with id {info['id']} to {info['type']}")
+            log.log(f"Set user with id {info['id']} to {info['type']}")
 
     if request.method == "DELETE":
         # Delete a user
         json = request.get_json(force=True)
         if json["id"]:
-            print(f"Trying to delete user with id {json['id']}")
+            log.log(f"Trying to delete user with id {json['id']}")
             g.db.delete_user_by_id(json["id"])
 
     return "200"
@@ -199,7 +270,7 @@ def items():
         # None check
         if id:
             g.db.remove_product(id)
-            print("Removed item with id: {id}")
+            log.log("Removed item with id: {id}")
 
             return "200"
 
@@ -241,14 +312,14 @@ def login():
             user_type: str = result[0][5]
 
             # TODO: Add as proper logging later
-            print(f"{username} ({uid}) logged in as {user_type}")
+            log.log(f"{username} ({uid}) logged in as {user_type}")
 
             # Redirect based on user type
             if user_type == "admin":
-                print("redirecting to admin.html")
+                log.log("redirecting to admin.html")
                 res = make_response(redirect(url_for("admin")))
             else:
-                print("redirecting to index.html")
+                log.log("redirecting to index.html")
                 res = make_response(redirect(url_for("index")))
 
             res.set_cookie("verification", str(uid))
@@ -277,7 +348,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.add_to_cart(cart_id, item_id)
-        print(f"user #{cart_id} added item #{item_id} to their cart")
+        log.log(f"user #{cart_id} added item #{item_id} to their cart")
 
     elif request.method == "DELETE":
         cart_id = request.cookies.get("verification")
@@ -286,7 +357,7 @@ def cart(item_id):
             return "You are not logged in!"
 
         g.db.remove_from_cart(cart_id, item_id)
-        print(f"Removing item #{item_id} from cart #{cart_id}")
+        log.log(f"Removing item #{item_id} from cart #{cart_id}")
 
     return "200"
 
