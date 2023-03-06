@@ -88,7 +88,7 @@ class DB:
 
     def remove_review(self, review_id):
         sql = "DELETE FROM Review WHERE id = %s"
-        val = (review_id, )
+        val = (review_id,)
 
         self.cursor.execute(sql, val)
         self.mydb.commit()
@@ -96,16 +96,16 @@ class DB:
     def update_review(self, review):
         sql = "UPDATE Review SET user_id = %s, item_id = %s, score = %s, comment = %s WHERE id = %s"
         val = (
-            review["user_id"], 
+            review["user_id"],
             review["item_id"],
             review["rating"],
             review["comment"],
-            review["id"], 
+            review["id"],
         )
 
         self.cursor.execute(sql, val)
         self.mydb.commit()
-        
+
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
         val = (product_id,)
@@ -146,6 +146,8 @@ class DB:
         self.mydb.commit()
 
     def delete_user_by_id(self, user_id):
+        sql = "DELETE FROM OrderHead "
+
         sql = "DELETE FROM User WHERE id = %s"
         val = (user_id,)
         self.cursor.execute(sql, val)
@@ -170,7 +172,7 @@ class DB:
         self.cursor.execute(sql, val)
         try:
             return self.cursor.fetchone()[0]
-        except: 
+        except:
             return None
 
     def add_product(self, description, name, quantity, price, image):
@@ -198,8 +200,11 @@ class DB:
         self.mydb.commit()
 
     ### STUFF WITH ORDERS ###
-    def get_orders_for_user(self, user_id):
-        sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
+    def get_orders_for_user(self, user_id, option=None):
+        if option == "all":
+            sql = "SELECT * FROM OrderHead WHERE customer_id = %s"
+        else:
+            sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
         val = (user_id,)
 
         self.cursor.execute(sql, val)
@@ -214,9 +219,31 @@ class DB:
         fetched_price = self.cursor.fetchone()
         return fetched_price[0]
 
+    def delete_all_orders_for_user(self, user_id):
+        orders = self.get_orders_for_user(user_id)
+
+        for one_order in orders:
+            print(one_order[0])
+            self.delete_order(one_order[0], user_id)
+
+    def delete_order(self, order_id, user_id):
+        products = self.get_products_from_order(order_id, user_id)
+
+        for one_product in products:
+            print(one_product[6])
+            sql = "DELETE FROM ItemGroup WHERE id = (%s)"
+            val = (one_product[6],)
+            self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+        sql = "DELETE FROM OrderHead WHERE id = %s"
+        val = (order_id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
     def get_products_from_order(self, order_id, user_id):
         # sql = "SELECT ItemGroup.* FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
-        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
+        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img, ItemGroup.id FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
         val = (order_id, user_id)
         self.cursor.execute(sql, val)
         fetched_products = self.cursor.fetchall()
@@ -271,7 +298,7 @@ class DB:
 
     def create_tag(self, new_tag):
         sql = "INSERT INTO Tag (value) VALUES (%s)"
-        val = (new_tag["value"], )
+        val = (new_tag["value"],)
         self.cursor.execute(sql, val)
         self.mydb.commit()
         pass
@@ -365,5 +392,4 @@ class DB:
 
 if __name__ == "__main__":
     db = DB()
-
-    db.checkout_cart(1)
+    db.delete_all_orders_for_user(1)
