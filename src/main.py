@@ -349,15 +349,31 @@ def signup():
         if request.form["password"] == request.form["password2"]:
 
             try:
-                jsonschema.validate(instance=request, schema=user_schema)
-                user_json = request
+                jsonschema.validate(instance=request.form, schema=user_schema)
+                user_json = request.form
             except ValidationError:
+                log.log("validation error")
                 return render_template(
                     "signup.html", user=g.db.get_username(request.cookies.get("verification"))
                 )
 
             g.db.create_customer(request.form)
-            return "200"
+            log.log("redirecting to index.html")
+            res = make_response(redirect(url_for("index")))
+
+            result = g.db.is_username_password(request.form["username"], request.form["password"])
+
+            if len(result) > 0:
+
+                # Extract relevant information from the DB response
+                uid: str = result[0][0]
+                username: str = result[0][1]
+                user_type: str = result[0][5]
+
+                res.set_cookie("verification", str(uid))
+                return res
+            else:
+                return "Signup failed!"
 
 
 @app.route("/terms_of_service")
