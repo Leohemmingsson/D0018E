@@ -347,12 +347,18 @@ def signup():
         )
     elif request.method == "POST":
         if request.form["password"] == request.form["password2"]:
+
+            try:
+                jsonschema.validate(instance=request, schema=user_schema)
+                user_json = request
+            except ValidationError:
+                return render_template(
+                    "signup.html", user=g.db.get_username(request.cookies.get("verification"))
+                )
+
             g.db.create_customer(request.form)
             return "200"
 
-        return render_template(
-            "signup.html", user=g.db.get_username(request.cookies.get("verification"))
-        )
 
 @app.route("/terms_of_service")
 def terms_of_service():
