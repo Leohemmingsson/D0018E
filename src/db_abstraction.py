@@ -86,6 +86,13 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def remove_all_users_reviews(self, user_id):
+        sql = "DELETE FROM Review WHERE user_id = %s"
+        val = (user_id,)
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
     def remove_review(self, review_id):
         sql = "DELETE FROM Review WHERE id = %s"
         val = (review_id,)
@@ -146,7 +153,8 @@ class DB:
         self.mydb.commit()
 
     def delete_user_by_id(self, user_id):
-        sql = "DELETE FROM OrderHead "
+        self.delete_all_orders_for_user(user_id)
+        self.remove_all_users_reviews(user_id)
 
         sql = "DELETE FROM User WHERE id = %s"
         val = (user_id,)
@@ -220,17 +228,15 @@ class DB:
         return fetched_price[0]
 
     def delete_all_orders_for_user(self, user_id):
-        orders = self.get_orders_for_user(user_id)
+        orders = self.get_orders_for_user(user_id, "all")
 
         for one_order in orders:
-            print(one_order[0])
             self.delete_order(one_order[0], user_id)
 
     def delete_order(self, order_id, user_id):
         products = self.get_products_from_order(order_id, user_id)
 
         for one_product in products:
-            print(one_product[6])
             sql = "DELETE FROM ItemGroup WHERE id = (%s)"
             val = (one_product[6],)
             self.cursor.execute(sql, val)
@@ -348,7 +354,7 @@ class DB:
     def __get_active_cart_id(self, user_id):
         if not len(self.__get_active_cart(user_id)) > 0:
             self.__create_cart(user_id)
-                
+
         try:
             return self.__get_active_cart(user_id)[0][0]
         except:
@@ -397,3 +403,4 @@ class DB:
 if __name__ == "__main__":
     db = DB()
     db.delete_all_orders_for_user(1)
+    db.remove_all_users_reviews(1)
