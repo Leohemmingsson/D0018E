@@ -234,6 +234,17 @@ def admin_order():
     return "200"
 
 
+@app.route("/admin/orders/<int:item_id>", methods=["GET", "PATCH"])
+def one_admin_order(item_id):
+    req_cookies = request.cookies.get("verification")
+    if not g.db.is_admin(req_cookies):
+        return "403: Forbidden"
+
+    fetched_products = g.db.get_products_from_order(item_id, 0)
+    items = [Item(item) for item in fetched_products]
+    return render_template("admin_one_order.html", items=enumerate(items))
+
+
 @app.route(
     "/admin/items",
     methods=["GET", "POST", "DELETE", "PATCH"],

@@ -88,7 +88,7 @@ class DB:
 
     def remove_review(self, review_id):
         sql = "DELETE FROM Review WHERE id = %s"
-        val = (review_id, )
+        val = (review_id,)
 
         self.cursor.execute(sql, val)
         self.mydb.commit()
@@ -96,16 +96,16 @@ class DB:
     def update_review(self, review):
         sql = "UPDATE Review SET user_id = %s, item_id = %s, score = %s, comment = %s WHERE id = %s"
         val = (
-            review["user_id"], 
+            review["user_id"],
             review["item_id"],
             review["rating"],
             review["comment"],
-            review["id"], 
+            review["id"],
         )
 
         self.cursor.execute(sql, val)
         self.mydb.commit()
-        
+
     def get_tags_for_product(self, product_id):
         sql = "SELECT Tag.value FROM Tag LEFT JOIN TagGroup ON Tag.id = TagGroup.tag_id WHERE TagGroup.item_id = %s"
         val = (product_id,)
@@ -198,8 +198,11 @@ class DB:
         self.mydb.commit()
 
     ### STUFF WITH ORDERS ###
-    def get_all_orders(self):
-        sql = "SELECT * FROM OrderHead"
+    def get_all_orders(self, alternative=None):
+        if alternative == "done":
+            sql = "SELECT * FROM OrderHead WHERE status = 'done'"
+        else:
+            sql = "SELECT * FROM OrderHead"
         self.cursor.execute(sql)
         fetched_orders = self.cursor.fetchall()
         return fetched_orders
@@ -221,9 +224,12 @@ class DB:
         return fetched_price[0]
 
     def get_products_from_order(self, order_id, user_id):
-        # sql = "SELECT ItemGroup.* FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
-        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
-        val = (order_id, user_id)
+        if user_id == 0:
+            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s"
+            val = (order_id,)
+        else:
+            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
+            val = (order_id, user_id)
         self.cursor.execute(sql, val)
         fetched_products = self.cursor.fetchall()
         return fetched_products
@@ -277,7 +283,7 @@ class DB:
 
     def create_tag(self, new_tag):
         sql = "INSERT INTO Tag (value) VALUES (%s)"
-        val = (new_tag["value"], )
+        val = (new_tag["value"],)
         self.cursor.execute(sql, val)
         self.mydb.commit()
         pass

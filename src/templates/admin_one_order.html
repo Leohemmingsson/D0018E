@@ -28,37 +28,43 @@
     <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
 </head>
 
+
 <body>
     <header>
-        {% include "components/navbar_admin.html" %}
+        {% include "components/navbar.html" %}
     </header>
+
     <div class="row justify-content-md-center">
         <div class="col-md-6">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Date</th>
+                        <th scope="col">Item name</th>
+                        <th scope="col">Quantity</th>
                         <th scope="col">Price</th>
-                        <th scope="col">Status</th>
                         <th scope="col">Link</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for index, one_order in orders %}
+                    {% for index, one_item in items%}
                     <tr>
                         <th scope="row">{{index}}</th>
-                        <td>{{one_order.date}}</td>
-                        <td>{{one_order.price}}</td>
-                        <td>{{one_order.status}}</td>
-                        <td><a href="/admin/orders/{{one_order.id}}" class="btn btn-secondary">See details</a></td>
+                        <td>{{one_item.name}}</td>
+                        <td>{{one_item.quantity}}</td>
+                        <td>{{one_item.price}}</td>
+                        <td><a href="{{one_item.href}}" class="btn btn-secondary">See details</a></td>
                     </tr>
                     {% endfor %}
 
                 </tbody>
 
             </table>
+
+            {% if not items %}
+            <h1>Looks like there is nothing to show</h1>
+            {% endif %}
         </div>
     </div>
 
