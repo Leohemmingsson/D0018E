@@ -350,6 +350,9 @@ def signup():
             g.db.create_customer(request.form)
             return "200"
 
+        return render_template(
+            "signup.html", user=g.db.get_username(request.cookies.get("verification"))
+        )
 
 @app.route("/terms_of_service")
 def terms_of_service():
