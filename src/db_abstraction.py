@@ -86,6 +86,13 @@ class DB:
         self.cursor.execute(sql, val)
         self.mydb.commit()
 
+    def remove_all_users_reviews(self, user_id):
+        sql = "DELETE FROM Review WHERE user_id = %s"
+        val = (user_id,)
+
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
     def remove_review(self, review_id):
         sql = "DELETE FROM Review WHERE id = %s"
         val = (review_id,)
@@ -146,6 +153,9 @@ class DB:
         self.mydb.commit()
 
     def delete_user_by_id(self, user_id):
+        self.delete_all_orders_for_user(user_id)
+        self.remove_all_users_reviews(user_id)
+
         sql = "DELETE FROM User WHERE id = %s"
         val = (user_id,)
         self.cursor.execute(sql, val)
@@ -213,8 +223,11 @@ class DB:
         fetched_orders = self.cursor.fetchall()
         return fetched_orders
 
-    def get_orders_for_user(self, user_id):
-        sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
+    def get_orders_for_user(self, user_id, option=None):
+        if option == "all":
+            sql = "SELECT * FROM OrderHead WHERE customer_id = %s"
+        else:
+            sql = "SELECT * FROM OrderHead WHERE customer_id = %s and status = 'done'"
         val = (user_id,)
 
         self.cursor.execute(sql, val)
@@ -229,13 +242,30 @@ class DB:
         fetched_price = self.cursor.fetchone()
         return fetched_price[0]
 
+    def delete_all_orders_for_user(self, user_id):
+        orders = self.get_orders_for_user(user_id, "all")
+
+        for one_order in orders:
+            self.delete_order(one_order[0], user_id)
+
+    def delete_order(self, order_id, user_id):
+        products = self.get_products_from_order(order_id, user_id)
+
+        for one_product in products:
+            sql = "DELETE FROM ItemGroup WHERE id = (%s)"
+            val = (one_product[6],)
+            self.cursor.execute(sql, val)
+        self.mydb.commit()
+
+        sql = "DELETE FROM OrderHead WHERE id = %s"
+        val = (order_id,)
+        self.cursor.execute(sql, val)
+        self.mydb.commit()
+
     def get_products_from_order(self, order_id, user_id):
-        if user_id == 0:
-            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s"
-            val = (order_id,)
-        else:
-            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
-            val = (order_id, user_id)
+        # sql = "SELECT ItemGroup.* FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
+        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img, ItemGroup.id FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
+        val = (order_id, user_id)
         self.cursor.execute(sql, val)
         fetched_products = self.cursor.fetchall()
         return fetched_products
@@ -339,7 +369,11 @@ class DB:
     def __get_active_cart_id(self, user_id):
         if not len(self.__get_active_cart(user_id)) > 0:
             self.__create_cart(user_id)
-        return self.__get_active_cart(user_id)[0][0]
+
+        try:
+            return self.__get_active_cart(user_id)[0][0]
+        except:
+            return None
 
     def __get_active_cart(self, user_id):
         sql = (
@@ -383,5 +417,5 @@ class DB:
 
 if __name__ == "__main__":
     db = DB()
-
-    db.checkout_cart(1)
+    db.delete_all_orders_for_user(1)
+    db.remove_all_users_reviews(1)
