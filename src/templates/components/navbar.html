@@ -17,6 +17,14 @@
     <script src="https://kit.fontawesome.com/c81cf709e0.js" crossorigin="anonymous"></script>
 </head>
 
+<script>
+    function login() {
+        document.cookie = "verification=-1; expires=Sat, 20 Jan 1980 12:00:00 UTC; SameSite=None";
+        window.location.href = "/login";
+        window.location.replace("/login");
+    }
+</script>
+
 <body>
     <!-- BEGINNING OF NAVBAR-->
     <header>
@@ -71,12 +79,4 @@
             </div>
         </div>
     </header>
-
-    <script>
-        function login() {
-            document.cookie = "verification=-1; expires=Sat, 20 Jan 1980 12:00:00 UTC; SameSite=None";
-            window.location.href = "/login";
-            window.location.replace("/login");
-        }
-    </script>
 </body>
