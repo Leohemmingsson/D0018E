@@ -33,8 +33,9 @@
         }
 
         function update(id) {
-            let form = document.getElementById("user_type");
-            let new_type = form.value;
+            let form = document.getElementById("user_type"+id);
+            let new_type = form.options[form.selectedIndex].text;
+            alert("updating " + id + " to value " + new_type)
 
             fetch('/admin/users', {
                 headers: {
@@ -59,8 +60,8 @@
             <th>{{user[1]}}</th>
             <th>{{user[5]}}</th>
             <th>
-                <form onsubmit="update({{user[0]}})">
-                    <select id="user_type" name='type' onchange='update({{user[0]}})'>
+                <form id="user_form{{user[0]}}" action="" method="POST">
+                    <select id="user_type{{user[0]}}" name='type' onchange='update({{user[0]}})'>
                         {% if user[5] == 'admin' %}
                         <option value='admin'>admin</option>
                         <option value='customer'>customer</option>
@@ -70,7 +71,6 @@
                         {% endif %}
                     </select>
                 </form>
-
             </th>
             <th>
                 <input value="delete" type="button" onclick="del({{user[0]}});console.log({{user[0]}})">
