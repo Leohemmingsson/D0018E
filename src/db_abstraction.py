@@ -263,9 +263,12 @@ class DB:
         self.mydb.commit()
 
     def get_products_from_order(self, order_id, user_id):
-        # sql = "SELECT ItemGroup.* FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id WHERE ItemGroup.order_id = %s"
-        sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img, ItemGroup.id FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
-        val = (order_id, user_id)
+        if user_id == 0:
+            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img, ItemGroup.id FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s"
+            val = (order_id,)
+        else:
+            sql = "SELECT Item.id, Item.name, Item.description, ItemGroup.quantity, ItemGroup.price, Item.img, ItemGroup.id FROM Item LEFT JOIN ItemGroup ON Item.id = ItemGroup.item_id LEFT JOIN OrderHead ON ItemGroup.order_id = OrderHead.id WHERE ItemGroup.order_id = %s and OrderHead.customer_id = %s"
+            val = (order_id, user_id)
         self.cursor.execute(sql, val)
         fetched_products = self.cursor.fetchall()
         return fetched_products

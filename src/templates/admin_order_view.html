@@ -51,16 +51,15 @@
                 <tbody>
                     {% for index, one_order in orders %}
                     <tr>
-                        <form action="" method="post">
-                            <th scope="row">{{index}}</th>
-                            <td>{{one_order.username}}</td>
-                            <td>{{one_order.user_id}}</td>
-                            <td>{{one_order.date}}</td>
-                            <td>{{one_order.price}}</td>
-                            <td>{{one_order.status}}</td>
-                            <td><a href="/admin/orders/{{one_order.id}}" class="btn btn-secondary">See details</a></td>
-                            <td><button type="submit" class="btn btn-danger">DELETE ORDER</button></td>
-                        </form>
+                        <th scope="row">{{index}}</th>
+                        <td>{{one_order.username}}</td>
+                        <td>{{one_order.user_id}}</td>
+                        <td>{{one_order.date}}</td>
+                        <td>{{one_order.price}}</td>
+                        <td>{{one_order.status}}</td>
+                        <td><a href="/admin/orders/{{one_order.id}}" class="btn btn-secondary">See details</a></td>
+                        <td><a href="/admin/orders/delete/{{one_order.id}}" class="btn btn-danger">DELETE ORDER</a>
+                        </td>
                     </tr>
                     {% endfor %}
 

@@ -218,9 +218,6 @@ def admin_order():
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
 
-    if request.method == "POST":
-        return "hi"
-
     if request.method == "GET":
         fetched_orders = g.db.get_all_orders()
         orders = [Order(order, g.db) for order in fetched_orders]
@@ -228,14 +225,18 @@ def admin_order():
         return render_template("admin_order_view.html", orders=enumerate(orders))
 
 
-@app.route("/admin/orders/delete/<int:order_id>", methods=["DELETE"])
+@app.route("/admin/orders/delete/<int:order_id>", methods=["GET"])
 def admin_delete_order(order_id):
     req_cookies = request.cookies.get("verification")
     if not g.db.is_admin(req_cookies):
         return "403: Forbidden"
 
-    g.db.delete_order_by_id(order_id)
-    return "200"
+    g.db.delete_order(order_id, 0)
+
+    fetched_orders = g.db.get_all_orders()
+    orders = [Order(order, g.db) for order in fetched_orders]
+
+    return render_template("admin_order_view.html", orders=enumerate(orders))
 
 
 @app.route("/admin/orders/<int:order_id>", methods=["GET", "PATCH"])
