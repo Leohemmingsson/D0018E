@@ -211,6 +211,46 @@ def admin_users():
     return "200"
 
 
+@app.route("/admin/orders", methods=["GET", "POST"])
+@cross_origin()
+def admin_order():
+    req_cookies = request.cookies.get("verification")
+    if not g.db.is_admin(req_cookies):
+        return "403: Forbidden"
+
+    if request.method == "GET":
+        fetched_orders = g.db.get_all_orders()
+        orders = [Order(order, g.db) for order in fetched_orders]
+
+        return render_template("admin_order_view.html", orders=enumerate(orders))
+
+
+@app.route("/admin/orders/delete/<int:order_id>", methods=["GET"])
+def admin_delete_order(order_id):
+    req_cookies = request.cookies.get("verification")
+    if not g.db.is_admin(req_cookies):
+        return "403: Forbidden"
+
+    g.db.delete_order(order_id, 0)
+
+    fetched_orders = g.db.get_all_orders()
+    orders = [Order(order, g.db) for order in fetched_orders]
+
+    return render_template("admin_order_view.html", orders=enumerate(orders))
+
+
+@app.route("/admin/orders/<int:order_id>", methods=["GET", "PATCH"])
+def one_admin_order(order_id):
+    req_cookies = request.cookies.get("verification")
+    if not g.db.is_admin(req_cookies):
+        return "403: Forbidden"
+
+    fetched_products = g.db.get_products_from_order(order_id, 0)
+    items = [Item(product) for product in fetched_products]
+
+    return render_template("admin_one_order.html", items=enumerate(items))
+
+
 @app.route(
     "/admin/items",
     methods=["GET", "POST", "DELETE", "PATCH"],
