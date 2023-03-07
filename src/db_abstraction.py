@@ -164,6 +164,12 @@ class DB:
         self.cursor.execute("select * from User")
         return self.cursor.fetchall()
 
+    def get_username_by_id(self, user_id):
+        sql = "SELECT username FROM User WHERE id = %s"
+        val = (user_id,)
+        self.cursor.execute(sql, val)
+        return self.cursor.fetchone()[0]
+
     def get_username(self, user_id):
         sql = "SELECT username FROM User WHERE id = %s"
         val = (user_id,)

@@ -8,3 +8,4 @@ class Order:
 
         if sql:
             self.price = sql.get_price_for_order(self.id)
+            self.username = sql.get_username_by_id(self.user_id)

@@ -38,6 +38,8 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">user id</th>
                         <th scope="col">Date</th>
                         <th scope="col">Price</th>
                         <th scope="col">Status</th>
@@ -49,6 +51,8 @@
                     {% for index, one_order in orders %}
                     <tr>
                         <th scope="row">{{index}}</th>
+                        <td>{{one_order.username}}</td>
+                        <td>{{one_order.user_id}}</td>
                         <td>{{one_order.date}}</td>
                         <td>{{one_order.price}}</td>
                         <td>{{one_order.status}}</td>
