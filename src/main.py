@@ -216,6 +216,10 @@ def admin_users():
     methods=["GET", "POST", "DELETE", "PATCH"],
 )
 def items():
+    verification_cookie: str = request.cookies.get("verification")
+
+    if not g.db.is_admin(verification_cookie):
+        return "403: Forbidden"
     if request.method == "GET":
         items = g.db.get_products()
         items = [Item(product) for product in items]
@@ -353,14 +357,17 @@ def signup():
             except ValidationError:
                 log.log("validation error")
                 return render_template(
-                    "signup.html", user=g.db.get_username(request.cookies.get("verification"))
+                    "signup.html",
+                    user=g.db.get_username(request.cookies.get("verification")),
                 )
 
             g.db.create_customer(request.form)
 
             log.log("redirecting to index.html")
             res = make_response(redirect(url_for("index")))
-            result = g.db.is_username_password(request.form["username"], request.form["password"])
+            result = g.db.is_username_password(
+                request.form["username"], request.form["password"]
+            )
             if len(result) > 0:
                 # Extract relevant information from the DB response
                 uid: str = result[0][0]
@@ -372,9 +379,9 @@ def signup():
                 return "Signup failed!"
         else:
             return render_template(
-                "signup.html", user=g.db.get_username(request.cookies.get("verification"))
+                "signup.html",
+                user=g.db.get_username(request.cookies.get("verification")),
             )
-
 
 
 @app.route("/terms_of_service")
