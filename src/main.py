@@ -395,8 +395,9 @@ def terms_of_service():
 @app.route("/product/<int:product_number>", methods=["GET", "POST"])
 def item_page(product_number):
     if request.method == "POST":
-        review_score = request.form["review_score"]
-        review_text = request.form["review_text"]
+        json = request.get_json(force=True)
+        review_score = json["review_score"]
+        review_text = json["review_text"]
         review = Review(
             [
                 None,
