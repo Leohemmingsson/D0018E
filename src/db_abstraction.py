@@ -129,9 +129,6 @@ class DB:
 
         return user
 
-    def get_cart(self, id):
-        pass
-
     def create_customer(self, user_info):
         sql = "INSERT INTO User (username, first_name, last_name, password, type) VALUES (%s, %s, %s, %s, %s)"
         val = (
@@ -190,6 +187,8 @@ class DB:
             return None
 
     def add_product(self, description, name, quantity, price, image):
+        if int(price) < 0 or int(quantity) < 0:
+            return
         sql = "INSERT INTO Item (description, name, in_stock, price, img) VALUES (%s, %s, %s, %s, %s)"
         val = (description, name, quantity, price, image)
         self.cursor.execute(sql, val)
@@ -208,6 +207,8 @@ class DB:
         self.mydb.commit()
 
     def update_product(self, item_id, description, name, quantity, price, image):
+        if int(price) < 0 or int(quantity) < 0:
+            return
         sql = "UPDATE Item SET description = %s, name = %s, in_stock = %s, price = %s, img = %s WHERE id = %s"
         val = (description, name, quantity, price, image, item_id)
         self.cursor.execute(sql, val)
@@ -334,10 +335,29 @@ class DB:
         """
         cart_id = self.__get_active_cart_id(user_id)
 
+        try:
+            self.__remove_from_stock(item_id)
+        except Exception as e:
+            print(e)
+            return
+
         if not self.__is_item_in_cart(item_id, cart_id):
             self.__add_item_to_cart(cart_id, item_id)
             return
+
         self.__add_quant_cart_item(cart_id, item_id)
+
+    def __remove_from_stock(self, item_id):
+        sql = "SELECT in_stock from Item where id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
+        quantity = self.cursor.fetchone()[0]
+        if quantity < 1:
+            raise Exception("No more items in stock")
+
+        sql = "UPDATE Item SET in_stock = in_stock - 1 WHERE id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
 
     def remove_from_cart(self, user_id, item_id):
         """
@@ -345,6 +365,10 @@ class DB:
         if only 1 left, remove item from cart
         """
         cart_id = self.__get_active_cart_id(user_id)
+
+        sql = "UPDATE Item SET in_stock = in_stock + 1 WHERE id = %s"
+        val = (item_id,)
+        self.cursor.execute(sql, val)
 
         if self.__quantity_in_cart(user_id, item_id)[0] > 1:
             self.__remove_one_from_item(cart_id, item_id)
@@ -367,6 +391,7 @@ class DB:
         sql = "UPDATE ItemGroup SET quantity = quantity - 1 WHERE order_id = %s and item_id = %s"
         val = (cart_id, item_id)
         self.cursor.execute(sql, val)
+
         self.mydb.commit()
 
     def __get_active_cart_id(self, user_id):
@@ -400,6 +425,7 @@ class DB:
         self.mydb.commit()
 
     def __add_item_to_cart(self, order_id, item_id):
+
         sql = "INSERT INTO ItemGroup (order_id, item_id, quantity) VALUES (%s, %s, 1)"
         val = (order_id, item_id)
         self.cursor.execute(sql, val)
